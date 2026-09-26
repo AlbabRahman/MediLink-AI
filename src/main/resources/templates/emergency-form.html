@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Emergency Finder')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker kicker-danger">Emergency mode</span>
+        <h1>Need a medicine urgently?</h1>
+        <p class="muted">Find the nearest pharmacy that actually has your medicine in stock — right now,
+            with distance and map.</p>
+    </div>
+
+    <div class="card card-accent" style="margin-top:20px;max-width:560px;">
+        <form method="post" action="/emergency">
+            <label>Medicine</label>
+            <select name="medicineId">
+                <option th:each="m : ${medicines}" th:value="${m.id}"
+                        th:text="${m.brandName} + ' ' + ${m.strength} + ' (' + ${m.generic.name} + ')'"></option>
+            </select>
+            <label>Your area (Bangladesh)</label>
+            <input type="text" name="area" value="Dhanmondi" placeholder="e.g. Dhanmondi, Mirpur, Uttara">
+            <button type="submit" class="btn-danger">Find nearest pharmacy</button>
+        </form>
+        <p class="muted small" style="margin:0;">For life-threatening emergencies call <strong>999</strong> first.</p>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

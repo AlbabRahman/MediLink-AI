@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Admin Dashboard')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Admin dashboard</span>
+        <h1>System overview</h1>
+        <p>
+            <span class="badge" th:text="${users.size()} + ' users'"></span>
+            <span class="badge" th:text="${medicines.size()} + ' medicines'"></span>
+            <span class="badge" th:text="${pharmacies.size()} + ' pharmacies'"></span>
+            <span class="badge badge-gold" th:text="${batches.size()} + ' registered batches'"></span>
+        </p>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h2>Users</h2>
+        <table>
+            <tr><th>Name</th><th>Email</th><th>Role</th><th>Phone</th></tr>
+            <tr th:each="u : ${users}">
+                <td><strong th:text="${u.name}"></strong></td>
+                <td th:text="${u.email}"></td>
+                <td><span class="badge" th:text="${u.role}"></span></td>
+                <td th:text="${u.phone}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Medicines</h2>
+        <table>
+            <tr><th>Brand</th><th>Strength</th><th>Generic</th><th>Company</th><th>Price</th></tr>
+            <tr th:each="m : ${medicines}">
+                <td><strong th:text="${m.brandName}"></strong></td>
+                <td th:text="${m.strength}"></td>
+                <td><span class="badge" th:text="${m.generic.name}"></span></td>
+                <td th:text="${m.company}"></td>
+                <td th:text="'৳' + ${m.priceBdt}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Pharmacies</h2>
+        <table>
+            <tr><th>Name</th><th>Area</th><th>Phone</th><th>24h</th></tr>
+            <tr th:each="p : ${pharmacies}">
+                <td><strong th:text="${p.name}"></strong></td>
+                <td th:text="${p.area}"></td>
+                <td th:text="${p.phone}"></td>
+                <td><span th:class="${p.open24h} ? 'badge badge-open' : 'badge badge-closed'"
+                          th:text="${p.open24h} ? 'Yes' : 'No'"></span></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2>Registered batches (fake-medicine reference data)</h2>
+        <table>
+            <tr><th>QR code</th><th>Batch</th><th>Manufacturer</th><th>Expiry</th></tr>
+            <tr th:each="b : ${batches}">
+                <td><code th:text="${b.qrCode}"></code></td>
+                <td th:text="${b.batchNo}"></td>
+                <td th:text="${b.manufacturer}"></td>
+                <td th:text="${b.expiryDate}"></td>
+            </tr>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

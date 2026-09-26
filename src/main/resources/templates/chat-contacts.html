@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Chat')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Live chat · web sockets</span>
+        <h1 th:text="${me.role.name() == 'PHARMACIST'} ? 'Patients you can help' : 'Talk to a pharmacist'"></h1>
+        <p class="muted">Messages are delivered instantly and saved in your history.</p>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <table>
+            <tr><th>Name</th><th>Phone</th><th></th></tr>
+            <tr th:each="c : ${contacts}">
+                <td><strong th:text="${c.name}"></strong></td>
+                <td th:text="${c.phone}"></td>
+                <td><a class="btn btn-sm" th:href="@{'/chat/' + ${c.id}}">Chat</a></td>
+            </tr>
+        </table>
+        <p class="muted" th:if="${contacts.isEmpty()}">No contacts available yet.</p>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

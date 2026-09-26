@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Register')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="auth-wrap">
+        <div class="card card-accent">
+            <h1>Create your account</h1>
+            <p class="muted">Registration is for patients. Pharmacist and admin accounts are created by the site admin.</p>
+            <p class="warn" th:if="${error}" th:text="${error}"></p>
+            <form method="post" action="/register">
+                <label>Full name</label>
+                <input type="text" name="name" required placeholder="e.g. Rahim Uddin">
+                <label>Email</label>
+                <input type="email" name="email" required placeholder="you@example.com">
+                <label>Password</label>
+                <input type="password" name="password" required placeholder="Choose a password">
+                <label>Phone</label>
+                <input type="text" name="phone" required placeholder="e.g. 01712345678">
+                <button type="submit">Register</button>
+            </form>
+            <hr class="rule">
+            <p class="muted small">Already have an account? <a href="/login">Login</a></p>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

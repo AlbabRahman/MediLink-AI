@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — MediLink AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <header class="topbar">
+        <div class="topbar-brand" onclick="showSection('home')">
+            <div class="brand-logo">M+</div>
+            <span>MediLink <b>AI</b></span>
+        </div>
+        <div class="topbar-right">
+            <span id="user-badge" class="user-badge"></span>
+            <button class="btn-ghost" onclick="logout()">Sign Out</button>
+        </div>
+    </header>
+
+    <div class="layout">
+        <nav class="sidenav" id="sidenav"></nav>
+
+        <main class="content">
+
+            <!-- ============ HOME ============ -->
+            <section id="sec-home" class="section">
+                <h1 id="home-greeting">Welcome</h1>
+                <p class="muted" id="home-sub"></p>
+                <div class="stat-grid" id="stat-grid"></div>
+                <div class="card">
+                    <h2>Quick actions</h2>
+                    <div class="quick-row" id="quick-actions"></div>
+                </div>
+            </section>
+
+            <!-- ============ MEDICINES ============ -->
+            <section id="sec-medicines" class="section">
+                <h1>Medicine Finder</h1>
+                <p class="muted">Search any brand or generic name — see alternatives and pharmacy prices.</p>
+                <div class="card">
+                    <div class="search-row">
+                        <input type="text" id="med-query" placeholder="e.g. Napa, Seclo, Monas, Paracetamol..." onkeydown="if(event.key==='Enter') searchMedicines()">
+                        <select id="med-strategy">
+                            <option value="NAME_SEARCH">By brand name</option>
+                            <option value="GENERIC_STRATEGY">By generic (chemical)</option>
+                            <option value="BEST_PRICE_STRATEGY">Cheapest first</option>
+                        </select>
+                        <button class="btn-primary" onclick="searchMedicines()">Search</button>
+                    </div>
+                </div>
+                <div id="med-results"></div>
+                <div id="price-panel"></div>
+            </section>
+
+            <!-- ============ EMERGENCY ============ -->
+            <section id="sec-emergency" class="section">
+                <h1>🚨 Emergency Medicine Finder</h1>
+                <p class="muted">Find the nearest pharmacy with your medicine in stock — right now.</p>
+                <div class="card">
+                    <div class="search-row">
+                        <select id="em-area">
+                            <option value="23.7465,90.3760">Dhanmondi, Dhaka</option>
+                            <option value="23.7937,90.4066">Banani, Dhaka</option>
+                            <option value="23.7786,90.4162">Gulshan, Dhaka</option>
+                            <option value="23.8071,90.3686">Mirpur, Dhaka</option>
+                            <option value="23.8728,90.3980">Uttara, Dhaka</option>
+                        </select>
+                        <button class="btn-primary" onclick="useMyLocation()">📡 Use My Location</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>Map — nearest pharmacy</h2>
+                    <iframe id="em-map" class="osm-map" title="OpenStreetMap"></iframe>
+                </div>
+                <div id="em-list"></div>
+            </section>
+
+            <!-- ============ PRESCRIPTIONS ============ -->
+            <section id="sec-prescriptions" class="section">
+                <h1>Prescription Scanner</h1>
+                <p class="muted">Upload a photo of your prescription — we read it with OCR and match your medicines.</p>
+                <div class="card">
+                    <h2>Upload prescription</h2>
+                    <input type="file" id="rx-file" accept="image/*" capture="environment" style="margin:10px 0;">
+                    <div id="rx-ocr-status" class="muted" style="font-size:0.85rem;"></div>
+                    <textarea id="rx-text" rows="5" placeholder="Extracted text appears here (you can edit or type it manually)..."></textarea>
+                    <div style="margin-top:12px;">
+                        <button class="btn-primary" onclick="savePrescription()">Save Prescription</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <h2>My prescriptions</h2>
+                    <div id="rx-list"></div>
+                </div>
+            </section>
+
+            <!-- ============ VERIFY ============ -->
+            <section id="sec-verify" class="section">
+                <h1>Fake Medicine Check</h1>
+                <p class="muted">Enter the batch/QR code printed on the medicine packet.</p>
+                <div class="card">
+                    <div class="search-row">
+                        <input type="text" id="verify-code" placeholder="e.g. BEX-2026-A1" onkeydown="if(event.key==='Enter') verifyCode()">
+                        <button class="btn-primary" onclick="verifyCode()">Verify</button>
+                    </div>
+                </div>
+                <div id="verify-result"></div>
+            </section>
+
+            <!-- ============ REMINDERS ============ -->
+            <section id="sec-reminders" class="section">
+                <h1>Medicine Reminders</h1>
+                <p class="muted">Never miss a dose — set a schedule and get alerts.</p>
+                <div class="card">
+                    <h2>New reminder</h2>
+                    <div class="form-grid">
+                        <div class="field"><label>Medicine</label><input type="text" id="rem-med" placeholder="e.g. Napa 500mg"></div>
+                        <div class="field"><label>Dosage</label><input type="text" id="rem-dose" placeholder="e.g. 1 tablet"></div>
+                        <div class="field"><label>Time</label><input type="time" id="rem-time" value="08:00"></div>
+                        <div class="field"><label>Frequency</label>
+                            <select id="rem-freq">
+                                <option>1+1+1 (After meal)</option>
+                                <option>1+0+1 (After meal)</option>
+                                <option>1+0+0 (Morning)</option>
+                                <option>0+0+1 (Night)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn-primary" onclick="createReminder()">Add Reminder</button>
+                    <button class="btn-ghost" style="margin-left:8px;" onclick="testAlarm()">🔔 Test Alarm</button>
+                </div>
+                <div class="card">
+                    <h2>My reminders</h2>
+                    <div id="rem-list"></div>
+                </div>
+            </section>
+
+            <!-- ============ CHAT ============ -->
+            <section id="sec-chat" class="section">
+                <h1>Live Chat</h1>
+                <p class="muted" id="chat-with"></p>
+                <div class="card chat-card">
+                    <div id="chat-box" class="chat-box"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chat-input" placeholder="Type your message..." onkeydown="if(event.key==='Enter') sendChat()">
+                        <button class="btn-primary" onclick="sendChat()">Send</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============ STOCK (pharmacist) ============ -->
+            <section id="sec-stock" class="section">
+                <h1>Stock Management</h1>
+                <p class="muted">Update quantities — every patient's screen updates live.</p>
+                <div class="card">
+                    <div class="search-row" style="margin-bottom:10px;">
+                        <input type="text" id="stock-filter" placeholder="Filter by medicine or pharmacy..." oninput="renderStocks()">
+                    </div>
+                    <table class="data-table" id="stock-table">
+                        <thead><tr><th>Medicine</th><th>Pharmacy</th><th style="width:130px;">Quantity</th><th></th></tr></thead>
+                        <tbody id="stock-body"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============ PROFILE ============ -->
+            <section id="sec-profile" class="section">
+                <h1>My Profile</h1>
+                <div class="card" style="max-width:480px;">
+                    <div class="form-grid">
+                        <div class="field"><label>Full name</label><input type="text" id="pf-name"></div>
+                        <div class="field"><label>Phone</label><input type="text" id="pf-phone"></div>
+                    </div>
+                    <button class="btn-primary" onclick="saveProfile()">Save Changes</button>
+                    <div class="muted" id="pf-msg" style="margin-top:10px; font-size:0.85rem;"></div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="dashboard.js"></script>
+</body>
+</html>

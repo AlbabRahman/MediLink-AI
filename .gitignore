@@ -1,0 +1,43 @@
+# Build output
+target/
+
+# Runtime data (H2 database, uploaded files)
+data/
+uploads/
+
+# Logs
+*.log
+
+# Dev/test scratch and Playwright debug tooling
+dev-test/
+node_modules/
+
+# Scratch/prototype files at project root
+adm.html
+alt.html
+cc.html
+ef.html
+emform.html
+emres.html
+hm.html
+home.html
+lg.html
+meds.html
+ms.html
+p.html
+root.html
+rx.html
+stock.html
+vr.html
+patient.txt
+pharma.txt
+t.txt
+v.txt
+rx_napa_seclo.jpg
+
+# IDE / OS noise
+.idea/
+.vscode/
+*.iml
+Thumbs.db
+.DS_Store

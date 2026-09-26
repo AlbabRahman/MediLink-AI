@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Login')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="auth-wrap">
+        <div class="card card-accent">
+            <h1>Welcome back</h1>
+            <p class="muted">Login to your MediLink AI account.</p>
+            <p class="warn" th:if="${error}" th:text="${error}"></p>
+            <form method="post" action="/login">
+                <label>Email</label>
+                <input type="email" name="email" required placeholder="you@example.com">
+                <label>Password</label>
+                <input type="password" name="password" required placeholder="Your password">
+                <button type="submit">Login</button>
+            </form>
+            <hr class="rule">
+            <p class="muted small">New patient? <a href="/register">Create an account</a></p>
+            <p class="muted small">
+                <strong>Demo accounts</strong> (password <code>1234</code>)<br>
+                Patient — <code>patient@test.com</code><br>
+                Pharmacist — <code>pharma@test.com</code><br>
+                Admin — <code>admin@test.com</code>
+            </p>
+        </div>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

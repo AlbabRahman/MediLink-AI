@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('My Pharmacy')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Pharmacist console</span>
+        <h1 th:if="${pharmacy != null}" th:text="${pharmacy.name}"></h1>
+        <h1 th:if="${noPharmacy}">My pharmacy</h1>
+        <p class="muted" th:if="${pharmacy != null}" th:text="${pharmacy.area} + ' · ' + ${pharmacy.address}"></p>
+        <p class="muted" th:if="${pharmacy != null}">Every quantity you save is pushed live to patients watching the stock page.</p>
+    </div>
+
+    <div class="card" th:if="${noPharmacy}">
+        <p class="warn">No pharmacy is assigned to your account yet. Please contact the admin.</p>
+    </div>
+
+    <div class="card" th:if="${stockList != null}">
+        <h2>Current stock</h2>
+        <table>
+            <tr><th>Medicine</th><th>Generic</th><th>Price</th><th>Quantity</th><th>Last update</th></tr>
+            <tr th:each="s : ${stockList}">
+                <td><strong th:text="${s.medicine.brandName}"></strong> <span class="small muted" th:text="${s.medicine.strength}"></span></td>
+                <td><span class="badge" th:text="${s.medicine.generic.name}"></span></td>
+                <td th:text="'৳' + ${s.medicine.priceBdt}"></td>
+                <td>
+                    <form method="post" th:action="@{'/pharmacy/stock/' + ${s.id}}" style="display:flex;gap:8px;align-items:center;">
+                        <input type="number" name="quantity" th:value="${s.quantity}" min="0" style="width:90px;margin:0;">
+                        <button class="btn-sm" type="submit">Save</button>
+                    </form>
+                </td>
+                <td class="muted small" th:text="${#temporals.format(s.updatedAt, 'dd MMM HH:mm')}"></td>
+            </tr>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

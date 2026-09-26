@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediLink | Patient & Pharmacist Portal</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- PWA: installable mobile app (Add to Home Screen) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1d4ed8">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- Immediate Theme Initialization to Prevent FOUC -->
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('medilink_theme');
+                const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.classList.add('dark-mode');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.classList.remove('dark-mode');
+                }
+            } catch (e) {}
+        })();
+    </script>
+    <!-- Tesseract AI OCR Engine -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+</head>
+</head>
+<body class="landing-body">
+
+    <!-- View Container: Interactive Application Platform View -->
+    <div id="view-app" class="view-section active">
+        <header class="top-nav">
+            <div class="brand-container" onclick="returnToLanding()" title="Back to Home / Landing Page">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm1 14h-2v-4H7V10h4V6h2v4h4v2h-4v4z"/>
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-title">MediLink</span>
+                </div>
+            </div>
+
+            <!-- Centered Portal Mode Indicator -->
+            <div class="top-nav-center">
+                <div class="portal-badge-indicator" id="portal-badge-indicator">
+                    <span class="portal-indicator-dot"></span>
+                    <span class="portal-sub-label" id="portal-indicator-text">Patient Portal</span>
+                </div>
+            </div>
+
+            <div class="user-profile-badge-nav" style="display:flex; align-items:center; gap:12px; position:relative;">
+                <button class="btn-top-upload" onclick="switchTab('upload-rx')">Upload Prescription</button>
+                
+                <!-- Premium Theme Switcher (App Top Nav) -->
+                <button type="button" class="premium-theme-switch" id="app-theme-switch" onclick="toggleTheme()" aria-label="Toggle theme mode" title="Toggle Light / Dark Mode [Ctrl+Shift+D]" role="switch" aria-checked="false">
+                    <div class="pts-track">
+                        <span class="pts-icon pts-sun-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                <circle cx="12" cy="12" r="4.5" fill="#f59e0b"></circle>
+                                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                            </svg>
+                        </span>
+                        <div class="pts-stars" aria-hidden="true">
+                            <span class="pts-star pts-star-1">✦</span>
+                            <span class="pts-star pts-star-2">★</span>
+                            <span class="pts-star pts-star-3">✦</span>
+                        </div>
+                        <span class="pts-icon pts-moon-icon" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                        </span>
+                        <div class="pts-thumb">
+                            <div class="pts-thumb-sun" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                    <circle cx="12" cy="12" r="4.5" fill="#f59e0b" stroke="#d97706"></circle>
+                                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="#d97706"></path>
+                                </svg>
+                            </div>
+                            <div class="pts-thumb-moon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="14" height="14" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.8">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                </svg>
+                            </div>
+                            <span class="pts-thumb-glow"></span>
+                        </div>
+                    </div>
+                </button>
+                
+                <!-- Notification Bell with Badge & Dropdown -->
+                <div class="notification-dropdown-wrapper" style="position:relative;">
+                    <button class="icon-circle-btn" id="btn-notification-bell" onclick="toggleNotificationDropdown(event)" title="Notifications">
+                        🔔
+                        <span class="notification-count-badge" id="notification-count-badge" style="display:none;">0</span>
+                    </button>
+
+                    <!-- Dropdown Panel (Screenshot Exact Replica) -->
+                    <div class="notification-dropdown-menu" id="notification-dropdown-menu">
+                        <div class="notification-dropdown-header">
+                            <h4 class="notif-header-title">Notifications</h4>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <button type="button" class="btn-clear-notifs-text" onclick="clearAllNotifications()" title="Clear all notifications" style="background:none; border:none; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer;">Clear All</button>
+                                <button type="button" class="btn-mark-all-read" onclick="markAllNotificationsAsRead()" title="Mark all as read">✓</button>
+                            </div>
+                        </div>
+
+                        <div class="notification-items-list" id="notification-items-list">
+                            <!-- Dynamically loaded by renderNotifications() -->
+                        </div>
+
+                        <div class="notification-dropdown-footer" id="notification-dropdown-footer">
+                            <button type="button" class="btn-see-all-notifs" onclick="showAllNotificationsModal()">See all</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="icon-circle-btn" onclick="switchTab('settings')" title="Account Settings">👤</button>
+            </div>
+        </header>
+
+        <div class="app-layout">
+            <aside class="sidebar">
+                <nav class="nav-menu">
+                    <button class="nav-btn active" onclick="switchTab('dashboard')" id="tab-btn-dashboard">
+                        <span class="nav-icon">⊞</span>
+                        <span>Dashboard</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('prescriptions')" id="tab-btn-prescriptions">
+                        <span class="nav-icon">📄</span>
+                        <span>Medical Records</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('medicines')" id="tab-btn-medicines">
+                        <span class="nav-icon">💊</span>
+                        <span>Prescriptions & Meds</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('reminders')" id="tab-btn-reminders">
+                        <span class="nav-icon">📅</span>
+                        <span>Appointments & Doses</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('verify')" id="tab-btn-verify">
+                        <span class="nav-icon">🛡️</span>
+                        <span>Fake Medicine Verifier</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('chat')" id="tab-btn-chat">
+                        <span class="nav-icon">💬</span>
+                        <span>Pharmacist Live Chat</span>
+                    </button>
+
+                    <button class="nav-btn" onclick="switchTab('stock')" id="tab-btn-stock" style="display:none;">
+                        <span class="nav-icon">📈</span>
+                        <span>Live Stock Broadcast</span>
+                    </button>
+                    <button class="nav-btn" onclick="switchTab('settings')" id="tab-btn-settings">
+                        <span class="nav-icon">⚙️</span>
+                        <span>Settings</span>
+                    </button>
+                </nav>
+
+                <!-- Sidebar Bottom Actions (Screenshot Match) -->
+                <div class="sidebar-bottom-actions">
+                    <button class="btn-emergency-mode-pill" onclick="switchTab('emergency')">
+                        Emergency Mode
+                    </button>
+                    <button class="sidebar-footer-link" onclick="switchTab('help')" id="tab-btn-help">
+                        <span>❓</span> Help Center
+                    </button>
+                    <button class="sidebar-footer-link" onclick="handleUserLogout()">
+                        <span>↪</span> Sign Out
+                    </button>
+                </div>
+            </aside>
+
+            <main class="main-viewport">
+                <div id="toast-container" class="toast-container"></div>
+
+                <!-- Tab 0: Patient Dashboard View -->
+                <section id="tab-dashboard" class="tab-view active">
+                    <div class="patient-welcome-banner">
+                        <div class="welcome-left">
+                            <div class="patient-avatar-large" id="patient-dash-avatar">👤</div>
+                            <div>
+                                <span class="badge-role-tag" id="patient-dash-badge">PATIENT DASHBOARD</span>
+                                <h1 class="welcome-heading">Welcome back, <span id="patient-dash-name">Rahim Ahmed</span>!</h1>
+                                <p class="welcome-sub">Here is your daily medical summary, health timeline, and prescription activity.</p>
+                            </div>
+                        </div>
+                        <div class="welcome-stats-row">
+                            <div class="w-stat-card">
+                                <span class="w-stat-num" id="dash-rx-count">3</span>
+                                <span class="w-stat-label">Active Prescriptions</span>
+                            </div>
+                            <div class="w-stat-card">
+                                <span class="w-stat-num" id="dash-rem-count">4</span>
+                                <span class="w-stat-label">Daily Reminders</span>
+                            </div>
+                            <div class="w-stat-card">
+                                <span class="w-stat-num" style="color:#10b981;">120/80</span>
+                                <span class="w-stat-label">BP (Normal)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions Grid -->
+                    <div class="dash-quick-actions">
+                        <button class="dash-action-btn" onclick="switchTab('medicines')">
+                            <span class="action-icon">💊</span>
+                            <div class="action-text">
+                                <strong>Find Medicine & Generic</strong>
+                                <small>Lowest price & alternative brands</small>
+                            </div>
+                        </button>
+                        <button class="dash-action-btn" onclick="switchTab('upload-rx')">
+                            <span class="action-icon">📋</span>
+                            <div class="action-text">
+                                <strong>Upload Prescription</strong>
+                                <small>OCR text extraction & verification</small>
+                            </div>
+                        </button>
+                        <button class="dash-action-btn emergency-action" onclick="switchTab('emergency')">
+                            <span class="action-icon">🚨</span>
+                            <div class="action-text">
+                                <strong>24/7 Emergency Pharmacy</strong>
+                                <small>Nearest life-saving medicines</small>
+                            </div>
+                        </button>
+                        <button class="dash-action-btn" onclick="switchTab('verify')">
+                            <span class="action-icon">🛡️</span>
+                            <div class="action-text">
+                                <strong>Verify Batch Authenticity</strong>
+                                <small>DGDA genuine safety check</small>
+                            </div>
+                        </button>
+                    </div>
+
+                    <!-- 2-Column Dashboard Body -->
+                    <div class="dash-grid-layout">
+                        <!-- Left Column: Timeline & Health Vitals -->
+                        <div class="dash-col">
+                            <!-- Medical Records Timeline -->
+                            <div class="card dash-card">
+                                <div class="card-header-flex">
+                                    <h3>📜 Medical Records Timeline</h3>
+                                    <button class="btn-text-sm" onclick="switchTab('prescriptions')">View All Prescriptions ➔</button>
+                                </div>
+                                <p class="text-muted" style="font-size:0.85rem; margin-bottom:16px;">Chronological history of prescriptions, diagnoses, and hospital visits.</p>
+
+                                <div class="dash-timeline-container" id="dash-timeline-list">
+                                    <div class="timeline-entry">
+                                        <div class="t-node">📄</div>
+                                        <div class="t-details">
+                                            <div class="t-top">
+                                                <strong>Dhaka Medical College & Hospital</strong>
+                                                <span class="t-badge">Aug 2026</span>
+                                            </div>
+                                            <p class="t-doctor">Dr. Mohammad Harun-ur-Rashid (MD) — General Medicine</p>
+                                            <div class="t-meds">
+                                                <span class="t-med-chip">Napa Extra 500mg</span>
+                                                <span class="t-med-chip">Seclo 20mg</span>
+                                                <span class="t-med-chip">Monas 10mg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="timeline-entry">
+                                        <div class="t-node">📄</div>
+                                        <div class="t-details">
+                                            <div class="t-top">
+                                                <strong>Square Hospital Dhaka</strong>
+                                                <span class="t-badge">Jan 2025</span>
+                                            </div>
+                                            <p class="t-doctor">Dr. Kazi Mahbubur Rahman — Pulmonology</p>
+                                            <div class="t-meds">
+                                                <span class="t-med-chip">Fexo 120mg</span>
+                                                <span class="t-med-chip">Azithrocin 500mg</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="timeline-entry">
+                                        <div class="t-node">📄</div>
+                                        <div class="t-details">
+                                            <div class="t-top">
+                                                <strong>Labaid Specialized Hospital</strong>
+                                                <span class="t-badge">May 2024</span>
+                                            </div>
+                                            <p class="t-doctor">Dr. Sultana Razia — Cardiology</p>
+                                            <div class="t-meds">
+                                                <span class="t-med-chip">Lisinopril 10mg</span>
+                                                <span class="t-med-chip">Annual Cardiac ECG Audit</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Health Vitals & Heartrate Graph -->
+                            <div class="card dash-card">
+                                <div class="card-header-flex">
+                                    <h3>📈 Health Vitals & Real-Time ECG</h3>
+                                    <span class="live-pill"><span class="pulse-dot"></span> Live Sensor Active</span>
+                                </div>
+                                <div class="vitals-dash-grid">
+                                    <div class="vital-kpi-card">
+                                        <span class="vital-kpi-label">Blood Pressure</span>
+                                        <div class="vital-kpi-val" style="color:var(--primary-blue, #1d4ed8);">120/80 <small>mmHg</small></div>
+                                        <span class="vital-kpi-status">Optimal Range</span>
+                                    </div>
+                                    <div class="vital-kpi-card">
+                                        <span class="vital-kpi-label">Heart Rate</span>
+                                        <div class="vital-kpi-val" style="color:#ef4444;"><span id="dash-bpm-val">72</span> <small>bpm</small></div>
+                                        <span class="vital-kpi-status">Resting Normal</span>
+                                    </div>
+                                    <div class="vital-kpi-card">
+                                        <span class="vital-kpi-label">Blood Oxygen (SpO2)</span>
+                                        <div class="vital-kpi-val" style="color:#10b981;">99%</div>
+                                        <span class="vital-kpi-status">Excellent</span>
+                                    </div>
+                                </div>
+
+                                <div class="vitals-chart-large">
+                                    <svg viewBox="0 0 500 120" preserveAspectRatio="none" class="chart-svg-dash">
+                                        <defs>
+                                            <linearGradient id="dashVitalsGrad" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stop-color="#1d4ed8" stop-opacity="0.25"/>
+                                                <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.0"/>
+                                            </linearGradient>
+                                        </defs>
+                                        <path d="M0,80 C70,100 120,40 180,60 C240,80 300,30 360,50 C420,70 460,20 500,40 L500,120 L0,120 Z" fill="url(#dashVitalsGrad)"/>
+                                        <path d="M0,80 C70,100 120,40 180,60 C240,80 300,30 360,50 C420,70 460,20 500,40" fill="none" stroke="#1d4ed8" stroke-width="3"/>
+                                    </svg>
+                                    <div class="chart-labels-dash">
+                                        <span>Mon (118/78)</span><span>Tue (120/80)</span><span>Wed (119/79)</span><span>Thu (121/81)</span><span>Fri (120/80)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Today's Reminders & AI Health Assistant -->
+                        <div class="dash-col">
+                            <!-- Medication Reminders Box -->
+                            <div class="card dash-card">
+                                <div class="card-header-flex">
+                                    <h3>⏰ Today's Medication Schedule</h3>
+                                    <button class="btn-text-sm" onclick="openReminderModal()">+ Add Dose</button>
+                                </div>
+                                <div class="dash-reminders-list" id="dash-today-reminders">
+                                    <!-- Populated by JS -->
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 1: Medicine Search -->
+                <section id="tab-medicines" class="tab-view">
+                    <div class="section-header">
+                        <div>
+                            <h2>💊 Medicine & Alternative Finder</h2>
+                            <p class="text-muted">Search genuine medicines in Bangladesh, explore generics, compare brand prices, and verify drug-to-drug interactions.</p>
+                        </div>
+                    </div>
+
+                    <div class="search-bar-card">
+                        <div class="search-inputs">
+                            <div class="input-group">
+                                <label>Search Query</label>
+                                <input type="text" id="med-search-input" placeholder="e.g. Napa, Paracetamol, Seclo, Esomeprazole, Azithromycin..." onkeyup="if(event.key==='Enter') executeMedicineSearch()">
+                            </div>
+                            <div class="input-group">
+                                <label>Search Strategy (Strategy Pattern)</label>
+                                <select id="search-strategy-select" onchange="executeMedicineSearch()">
+                                    <option value="BRAND_SEARCH">🏷️ Brand Name Strategy (e.g. Napa, Ace, Seclo)</option>
+                                    <option value="GENERIC_SEARCH">🧪 Generic Molecule Strategy (e.g. Paracetamol, Omeprazole)</option>
+                                    <option value="BEST_PRICE_STRATEGY">💰 Best Value Strategy (Lowest Price First)</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary" onclick="executeMedicineSearch()">Search</button>
+                        </div>
+                    </div>
+
+                    <div class="med-results-grid" id="med-results-container"></div>
+
+                    <div class="card interaction-card">
+                        <h3>⚡ Drug-to-Drug Interaction Checker (Strategy Pattern)</h3>
+                        <p class="text-muted">Select multiple medicines to evaluate potential pharmacological contradictions and adverse interactions.</p>
+                        <div class="interaction-form">
+                            <div class="input-group">
+                                <label>Medicines (comma-separated):</label>
+                                <input type="text" id="interaction-meds-input" value="Paracetamol, Warfarin, Aspirin" placeholder="e.g. Ciprofloxacin, Antacid, Warfarin">
+                            </div>
+                            <div class="input-group">
+                                <label>Analysis Mode:</label>
+                                <select id="interaction-mode-select">
+                                    <option value="STANDARD">Standard Patient Safety Mode</option>
+                                    <option value="CLINICAL">Clinical Strict Biochemical Audit Mode</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-secondary" onclick="checkInteractions()">Evaluate Interactions</button>
+                        </div>
+                        <div id="interaction-result-box" class="interaction-result-box" style="display:none;"></div>
+                    </div>
+                </section>
+
+                <!-- Tab 2: Prescription Scanner -->
+                <section id="tab-prescriptions" class="tab-view">
+                    <div class="section-header">
+                        <div>
+                            <h2>📋 Prescription Scanner & Workflow</h2>
+                            <p class="text-muted">Upload typed/printed prescriptions, extract dosages automatically, and advance through the state lifecycle.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTab('upload-rx')">+ Upload New Prescription</button>
+                    </div>
+                    <div class="prescriptions-list" id="prescriptions-list-container"></div>
+                </section>
+
+                <!-- Tab: Upload & Scan Prescription (Screenshot Exact Replica) -->
+                <section id="tab-upload-rx" class="tab-view">
+                    <!-- Top Search Header Bar -->
+                    <div class="upload-rx-top-header">
+                        <div class="brand-container">
+                            <span class="brand-title" style="font-size:1.35rem; font-weight:800; color:var(--primary-blue, #1d4ed8);">MediLink</span>
+                        </div>
+                        <div class="upload-rx-search-box">
+                            <span class="upload-rx-search-icon">🔍</span>
+                            <input type="text" id="upload-rx-search" placeholder="Search patients or records..." onkeyup="filterUploadHistory(this.value)">
+                        </div>
+                        <div class="notification-dropdown-wrapper" style="position:relative;">
+                            <button class="icon-circle-btn" id="btn-notification-bell-upload" onclick="toggleNotificationDropdown(event, 'upload')" title="Notifications">
+                                🔔
+                                <span class="notification-count-badge notif-badge-upload" style="display:none;">0</span>
+                            </button>
+                            <div class="notification-dropdown-menu" id="notification-dropdown-menu-upload">
+                                <div class="notification-dropdown-header">
+                                    <h4 class="notif-header-title">Notifications</h4>
+                                    <div style="display:flex; align-items:center; gap:8px;">
+                                        <button type="button" class="btn-clear-notifs-text" onclick="clearAllNotifications()" title="Clear all notifications" style="background:none; border:none; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer;">Clear All</button>
+                                        <button type="button" class="btn-mark-all-read" onclick="markAllNotificationsAsRead()" title="Mark all as read">✓</button>
+                                    </div>
+                                </div>
+                                <div class="notification-items-list"></div>
+                                <div class="notification-dropdown-footer">
+                                    <button type="button" class="btn-see-all-notifs" onclick="showAllNotificationsModal()">See all</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Page Title -->
+                    <div class="upload-rx-heading-block">
+                        <h1 class="upload-rx-main-title">Upload & Scan Prescription</h1>
+                    </div>
+
+                    <!-- 2-Column Workspace Grid -->
+                    <div class="upload-rx-grid">
+                        <!-- Left Column: Drag & Drop Dropzone Card -->
+                        <div class="upload-rx-card left-dropzone-card">
+                            <div class="upload-rx-dropzone" id="upload-rx-dropzone" onclick="triggerRxScanUpload()" ondragover="handleRxDragOver(event)" ondragleave="handleRxDragLeave(event)" ondrop="handleRxDrop(event)">
+                                <input type="file" id="upload-rx-file-input" accept="image/*,.pdf" style="display:none;" onchange="handleRxFileSelect(event)">
+                                
+                                <div class="rx-dropzone-inner" id="rx-dropzone-inner">
+                                    <div class="rx-cloud-circle">
+                                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-blue, #1d4ed8)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                                            <path d="M12 13v6"/>
+                                            <path d="m9 16 3-3 3 3"/>
+                                        </svg>
+                                    </div>
+                                    <h3 class="rx-drop-title">Drag & Drop Prescription</h3>
+                                    <p class="rx-drop-sub">or click to browse from your device</p>
+                                    <div class="rx-format-tags">
+                                        <span class="format-tag">PNG</span>
+                                        <span class="format-tag">JPG</span>
+                                        <span class="format-tag">PDF</span>
+                                        <span class="format-size">(Max 10MB)</span>
+                                    </div>
+                                </div>
+
+                                <!-- OCR Scanning State -->
+                                <div class="rx-scanning-progress" id="rx-scanning-progress" style="display:none;">
+                                    <div class="scan-laser-spinner"></div>
+                                    <h4 style="margin:12px 0 4px; color:#0284c7; font-weight:800;">🤖 AI OCR Analyzing Prescription...</h4>
+                                    <p style="font-size:0.85rem; color:#64748b; margin:0;">Extracting generic molecules, dosage instructions & schedule...</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Detected Items Card -->
+                        <div class="upload-rx-card right-detected-card">
+                            <div class="detected-card-header">
+                                <div class="detected-title-row">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2">
+                                        <rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/><path d="M9 3v18"/><path d="M15 3v18"/>
+                                    </svg>
+                                    <h3>Detected Items</h3>
+                                </div>
+                                <span class="detected-count-badge" id="detected-count-badge">0 Found</span>
+                            </div>
+
+                            <div class="detected-card-body" id="detected-card-body">
+                                <!-- Empty State -->
+                                <div class="detected-empty-state" id="detected-empty-state">
+                                    <div class="empty-scan-icon">
+                                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#cbd5e1" stroke-width="1.5">
+                                            <path d="M3 7V5a2 2 0 0 1 2-2h2"/><path d="M17 3h2a2 2 0 0 1 2 2v2"/><path d="M21 17v2a2 2 0 0 1-2 2h-2"/><path d="M7 21H5a2 2 0 0 1-2-2v-2"/><rect width="10" height="10" x="7" y="7" rx="1"/>
+                                        </svg>
+                                    </div>
+                                    <p>Upload a prescription to begin extracting details.</p>
+                                </div>
+
+                                <!-- Detected Medicines List Container -->
+                                <div class="detected-items-list" id="detected-items-list" style="display:none;"></div>
+                            </div>
+
+                            <!-- Voice Note Recorder Widget -->
+                            <div class="voice-recorder-widget rx-upload-page-voice" id="rx-voice-widget-page" style="padding:12px 18px; border-top:1px solid #e2e8f0; background:#f8fafc;">
+                                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                                    <span style="font-size:0.82rem; font-weight:700; color:var(--text-heading, #1e293b);">🎙️ Voice Note / Audio Symptoms</span>
+                                    <span id="voice-timer-page" style="font-size:0.8rem; font-weight:700; color:#ef4444; display:none;">● 00:00</span>
+                                </div>
+                                <div style="display:flex; align-items:center; gap:8px;">
+                                    <button type="button" class="btn btn-secondary btn-sm" id="btn-record-voice-page" onclick="toggleVoiceRecording('page')">
+                                        <span id="rec-btn-text-page">🎙️ Record Memo</span>
+                                    </button>
+                                    <label class="btn btn-secondary btn-sm" style="margin:0; cursor:pointer;" title="Upload existing audio file">
+                                        📁 Attach Audio
+                                        <input type="file" accept="audio/*" style="display:none;" onchange="handleVoiceAudioFile(event, 'page')">
+                                    </label>
+                                </div>
+                                <div id="voice-preview-box-page" style="margin-top:8px; display:none; align-items:center; gap:10px;">
+                                    <audio id="voice-audio-preview-page" controls style="height:32px; flex:1;"></audio>
+                                    <button type="button" class="btn-clear-voice" onclick="clearVoiceRecording('page')" title="Discard voice note" style="background:none; border:none; color:#ef4444; font-size:1.1rem; cursor:pointer;">&times;</button>
+                                </div>
+                            </div>
+
+                            <div class="detected-card-footer">
+                                <button type="button" class="btn-confirm-add-history" id="btn-confirm-add-history" onclick="confirmAndAddRxToHistory()" disabled>
+                                    <span class="confirm-check-icon">✓</span> Confirm & Add to History
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Accuracy Guidelines Banner -->
+                    <div class="upload-rx-guidelines-banner">
+                        <div class="guidelines-bulb-icon">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2">
+                                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>
+                            </svg>
+                        </div>
+                        <div class="guidelines-text">
+                            <strong>Guidelines for Accuracy</strong>
+                            <p>Ensure the document is well-lit, laid flat, and the text is in focus. Avoid shadows or glare covering important details. For best results, crop out unnecessary backgrounds before uploading.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 3: Real-Time Pharmacy Stock -->
+                <section id="tab-stock" class="tab-view">
+                    <div class="section-header">
+                        <div>
+                            <h2>📊 Real-Time Pharmacy Stock Updates</h2>
+                            <p class="text-muted">Demonstrates the <strong>Observer Design Pattern</strong>. Pharmacist inventory modifications instantly broadcast across all connected clients via real-time streams.</p>
+                        </div>
+                    </div>
+
+                    <div class="stock-dashboard-grid">
+                        <div class="card stock-table-card">
+                            <div class="card-header-flex">
+                                <h3>Pharmacy Inventory Table</h3>
+                                <span class="live-pill"><span class="pulse-dot"></span> Live Sync</span>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Medicine</th>
+                                            <th>Generic</th>
+                                            <th>Pharmacy</th>
+                                            <th>Stock Level</th>
+                                            <th>Unit Price</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="stock-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="card stock-events-card">
+                            <h3>📡 Live Observer Event Ticker</h3>
+                            <p class="text-muted">Real-time notifications received from backend Subject:</p>
+                            <div class="event-ticker-box" id="event-ticker-box"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 4: Emergency 24/7 Pharmacy Finder -->
+                <section id="tab-emergency" class="tab-view">
+                    <div class="section-header">
+                        <div>
+                            <h2>🚨 Emergency Medicine & 24/7 Pharmacy Locator</h2>
+                            <p class="text-muted">Instant access to verified 24-hour pharmacies and urgent life-saving medications (Insulin, Inhalers, Cardiac support) in Dhaka.</p>
+                        </div>
+                    </div>
+
+                    <div class="emergency-controls-card">
+                        <div class="geo-picker">
+                            <span>📍 Current Location:</span>
+                            <select id="user-location-select" onchange="loadEmergencyPharmacies()">
+                                <option value="23.7465,90.3760" selected>Dhanmondi, Dhaka</option>
+                                <option value="23.7937,90.4066">Banani, Dhaka</option>
+                                <option value="23.7786,90.4162">Gulshan 1 & 2, Dhaka</option>
+                                <option value="23.8071,90.3686">Mirpur 10, Dhaka</option>
+                                <option value="23.8728,90.3980">Uttara, Dhaka</option>
+                            </select>
+                            <button type="button" class="btn btn-primary" onclick="useMyLocation()" title="Use this device's GPS for one-tap nearest-pharmacy search">📡 Use My Location</button>
+                        </div>
+                    </div>
+
+                    <div class="card emergency-map-card">
+                        <div class="card-header-flex">
+                            <h3>🗺️ Live Map — Nearest Emergency Pharmacy</h3>
+                            <span class="text-muted" id="emergency-map-sub" style="font-size:0.8rem;"></span>
+                        </div>
+                        <iframe id="emergency-osm-map" class="osm-embed-map" title="OpenStreetMap — nearest emergency pharmacy" loading="lazy"></iframe>
+                        <p class="text-muted" style="font-size:0.78rem; margin:8px 0 0;">Map data © OpenStreetMap contributors. Tap <strong>🧭 Directions</strong> on any pharmacy card to start turn-by-turn navigation.</p>
+                    </div>
+
+                    <div class="emergency-pharmacies-grid" id="emergency-pharmacies-container"></div>
+                </section>
+
+                <!-- Tab 5: Fake Medicine & Batch Verifier -->
+                <section id="tab-verify" class="tab-view">
+                    <div class="section-header">
+                        <div>
+                            <h2>🛡️ Fake Medicine & Batch Verification</h2>
+                            <p class="text-muted">Combat counterfeit medicines by validating batch codes, QR markers, and DGDA regulatory records.</p>
+                        </div>
+                    </div>
+
+                    <div class="card verify-card">
+                        <div class="verify-form-container">
+                            <div class="input-group">
+                                <label>Target Medicine (Optional):</label>
+                                <select id="verify-medicine-select">
+                                    <option value="">-- Check Across All DGDA Records --</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>Batch / QR Code Number:</label>
+                                <input type="text" id="verify-code-input" placeholder="e.g. BEX-2026-A1, SQR-SEC-201, INC-RES-550, FAKE-999...">
+                            </div>
+                            <div class="sample-badges">
+                                <span>Sample valid codes:</span>
+                                <button class="chip-btn" onclick="setVerifyCode('BEX-2026-A1')">BEX-2026-A1</button>
+                                <button class="chip-btn" onclick="setVerifyCode('SQR-SEC-201')">SQR-SEC-201</button>
+                                <button class="chip-btn" onclick="setVerifyCode('ACM-MON-101')">ACM-MON-101</button>
+                                <button class="chip-btn chip-danger" onclick="setVerifyCode('SUSPECT-XYZ-000')">SUSPECT-XYZ-000 (Counterfeit)</button>
+                            </div>
+                            <button class="btn btn-primary" onclick="verifyMedicineCode()">Verify Authenticity</button>
+                        </div>
+
+                        <div id="verify-result-container" class="verify-result-container" style="display:none;"></div>
+                    </div>
+                </section>
+
+                <!-- Tab 6: Medicine Reminders -->
+                <section id="tab-reminders" class="tab-view">
+                    <div class="section-header">
+                        <div>
+                            <h2>⏰ Medicine Reminders & Dosage Scheduler</h2>
+                            <p class="text-muted">Powered by a background Java daemon thread that monitors scheduled doses and triggers real-time alerts.</p>
+                        </div>
+                        <div class="header-actions">
+                            <button class="btn btn-secondary" onclick="triggerTestAlarm()">🔔 Test Instant Alarm</button>
+                            <button class="btn btn-primary" onclick="openReminderModal()">+ Add Schedule</button>
+                        </div>
+                    </div>
+
+                    <div class="reminders-grid" id="reminders-container"></div>
+                </section>
+
+                <!-- Tab 7: Pharmacist Live Chat -->
+                <section id="tab-chat" class="tab-view">
+                    <div class="section-header">
+                        <div>
+                            <h2>💬 Live Patient – Pharmacist Consultation</h2>
+                            <p class="text-muted">Direct communication channel between patients and verified pharmacists.</p>
+                        </div>
+                    </div>
+
+                    <div class="chat-container-card">
+                        <div class="chat-header">
+                            <div class="chat-user-info">
+                                <span class="avatar">🩺</span>
+                                <div>
+                                    <strong>Dr. Farhan Kabir</strong>
+                                    <span class="text-muted">Licensed Pharmacist | Lazz Pharma</span>
+                                </div>
+                            </div>
+                            <span class="online-indicator"><span class="pulse-dot"></span> Online</span>
+                        </div>
+
+                        <div class="chat-messages-box" id="chat-messages-box"></div>
+
+                        <div class="chat-input-bar">
+                            <input type="text" id="chat-input" placeholder="Type your medication query..." onkeyup="if(event.key==='Enter') sendChatMessage()">
+                            <button class="btn btn-primary" onclick="sendChatMessage()">Send</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 8: Patient Profile Settings (Screenshot Exact Match) -->
+                <section id="tab-settings" class="tab-view">
+                    <div class="settings-page-header">
+                        <div class="settings-title-group">
+                            <h1 class="settings-title">Patient Profile Settings</h1>
+                            <p class="settings-sub">Manage your personal information, medical ID, and emergency contacts securely.</p>
+                        </div>
+                        <div class="settings-actions-group">
+                            <button type="button" class="btn-discard" onclick="resetProfileSettingsForm()">Discard</button>
+                            <button type="button" class="btn-save-changes" onclick="saveProfileSettings()">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V7l-4-4zm-5 16c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm3-10H5V5h10v4z"/></svg>
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="settings-grid-layout">
+                        <!-- Left Column (Profile Avatar Card + Medical ID Card) -->
+                        <div class="settings-col-left">
+                            <!-- Profile Card -->
+                            <div class="settings-card profile-avatar-card">
+                                <div class="profile-photo-wrapper" onclick="triggerAvatarChange()" style="cursor:pointer;" title="Click to upload profile photo">
+                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Patient Avatar" class="profile-photo-img" id="settings-avatar-img">
+                                    <div class="photo-upload-badge">📷</div>
+                                </div>
+                                <h3 class="profile-name-text" id="settings-card-name">Alex Mercer</h3>
+                                <span class="patient-id-tag" id="settings-card-id">Patient ID: PA-9824-A</span>
+                                <input type="file" id="patient-photo-file-input" accept="image/png, image/jpeg, image/jpg, image/webp, image/gif, image/*" style="display:none;" onchange="handlePatientPhotoUpload(event)">
+                                <a href="javascript:void(0)" class="change-photo-link" onclick="triggerAvatarChange()">
+                                    ✏️ Change Photo
+                                </a>
+                            </div>
+
+                            <!-- Medical ID Card -->
+                            <div class="settings-card medical-id-card">
+                                <div class="medical-id-header">
+                                    <span class="heart-icon">♡</span>
+                                    <h3>Medical ID</h3>
+                                </div>
+
+                                <div class="med-id-group">
+                                    <label class="med-id-label">Blood Type</label>
+                                    <div class="med-id-pills">
+                                        <span class="pill-blood-type" id="pill-blood-type">O Negative</span>
+                                    </div>
+                                </div>
+
+                                <div class="med-id-group">
+                                    <label class="med-id-label">Known Allergies</label>
+                                    <div class="med-id-pills" id="allergies-pills-container">
+                                        <span class="pill-allergy">Penicillin</span>
+                                        <span class="pill-allergy">Latex</span>
+                                    </div>
+                                </div>
+
+                                <div class="med-id-group">
+                                    <label class="med-id-label">Chronic Conditions</label>
+                                    <div class="med-id-pills" id="chronic-pills-container">
+                                        <span class="pill-condition">Asthma (Mild)</span>
+                                    </div>
+                                </div>
+
+                                <button type="button" class="btn-edit-medical-data" onclick="openEditMedicalIdModal()">
+                                    + Edit Medical Data
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- Right Column (Personal Details + Emergency Contacts) -->
+                        <div class="settings-col-right">
+                            <!-- Personal Details Card -->
+                            <div class="settings-card personal-details-card">
+                                <h3 class="card-section-title">Personal Details</h3>
+                                
+                                <div class="form-row-2">
+                                    <div class="form-field-box">
+                                        <label>First Name</label>
+                                        <input type="text" id="profile-first-name" placeholder="First Name">
+                                    </div>
+                                    <div class="form-field-box">
+                                        <label>Last Name</label>
+                                        <input type="text" id="profile-last-name" placeholder="Last Name">
+                                    </div>
+                                </div>
+
+                                <div class="form-row-2">
+                                    <div class="form-field-box">
+                                        <label>Date of Birth</label>
+                                        <div class="input-with-icon-right">
+                                            <input type="date" id="profile-dob" onclick="if(this.showPicker) this.showPicker()">
+                                            <span class="field-icon-right" onclick="openDobCalendar()" title="Click to open calendar">📅</span>
+                                        </div>
+                                    </div>
+                                    <div class="form-field-box">
+                                        <label>Gender</label>
+                                        <select id="profile-gender">
+                                            <option value="Female">Female</option>
+                                            <option value="Male">Male</option>
+                                            <option value="Non-binary">Non-binary</option>
+                                            <option value="Other">Other / Prefer not to say</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-field-box full-width">
+                                    <label>Email Address</label>
+                                    <input type="email" id="profile-email" placeholder="name@example.com">
+                                </div>
+
+                                <div class="form-field-box full-width">
+                                    <label>Phone Number</label>
+                                    <input type="text" id="profile-phone" placeholder="e.g. +880 1700-000000">
+                                </div>
+                            </div>
+
+                            <!-- Emergency Contacts Card -->
+                            <div class="settings-card emergency-contacts-card">
+                                <div class="contacts-card-header">
+                                    <h3 class="card-section-title">Emergency Contacts</h3>
+                                    <button type="button" class="btn-add-contact-link" onclick="openAddContactModal()">
+                                        <span class="plus-icon">⊕</span> Add Contact
+                                    </button>
+                                </div>
+
+                                <div class="contacts-list" id="emergency-contacts-list">
+                                    <div class="empty-contacts-msg" id="empty-contacts-msg" style="color:#64748b; font-size:0.85rem; padding:16px; background:#f8fafc; border-radius:8px; border:1px dashed #cbd5e1; text-align:center;">
+                                        No emergency contacts added yet. Click <strong>⊕ Add Contact</strong> above to add one.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Tab 9: Help & Support Center Page (Screenshot Exact Replica) -->
+                <section id="tab-help" class="tab-view">
+                    <!-- Top Sub-Navigation Bar -->
+                    <div class="help-subnav-bar">
+                        <div class="help-subnav-tabs">
+                            <button class="help-subnav-btn active" id="btn-subnav-guides" onclick="switchHelpSubView('guides')">
+                                <span>❓</span> Help Center (Guides & FAQs)
+                            </button>
+                            <button class="help-subnav-btn" id="btn-subnav-support" onclick="switchHelpSubView('support')">
+                                <span>🎧</span> Support Center (Report an Issue)
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Subview 1: Help Center Guides -->
+                    <div id="help-subview-guides" class="help-subview active">
+                        <!-- Top Search Header Bar -->
+                        <div class="help-top-header">
+                            <div class="help-search-input-wrapper">
+                                <span class="h-search-icon">🔍</span>
+                                <input type="text" id="help-top-search-input" placeholder="Search for help or articles..." onkeyup="filterHelpArticles(this.value)">
+                            </div>
+                            <div class="help-header-actions">
+                                <div class="notification-dropdown-wrapper" style="position:relative;">
+                                    <button class="icon-circle-btn" id="btn-notification-bell-help" onclick="toggleNotificationDropdown(event, 'help')" title="Notifications">
+                                        🔔
+                                        <span class="notification-count-badge notif-badge-help" style="display:none;">0</span>
+                                    </button>
+
+                                    <!-- Dropdown Panel (Screenshot Exact Replica) -->
+                                    <div class="notification-dropdown-menu" id="notification-dropdown-menu-help">
+                                        <div class="notification-dropdown-header">
+                                            <h4 class="notif-header-title">Notifications</h4>
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                <button type="button" class="btn-clear-notifs-text" onclick="clearAllNotifications()" title="Clear all notifications" style="background:none; border:none; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer;">Clear All</button>
+                                                <button type="button" class="btn-mark-all-read" onclick="markAllNotificationsAsRead()" title="Mark all as read">✓</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="notification-items-list">
+                                            <!-- Dynamically loaded by renderNotifications() -->
+                                        </div>
+
+                                        <div class="notification-dropdown-footer">
+                                            <button type="button" class="btn-see-all-notifs" onclick="showAllNotificationsModal()">See all</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="icon-circle-btn" onclick="showToast('Recent searches: Prescription OCR, Reset Password')" title="Recent History">🕒</button>
+                                <div class="help-avatar-circle" onclick="switchTab('settings')" title="My Profile">
+                                    <span id="help-user-initial">P</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hero Search Box -->
+                        <div class="help-hero-card">
+                            <div class="help-badge-pill">
+                                <span class="q-icon">?</span> Help Center
+                            </div>
+                            <h1 class="help-hero-title">How can we help you today?</h1>
+                            <p class="help-hero-sub">Access support guides, FAQs, and contact our clinical support team for assistance with MediLink.</p>
+
+                            <div class="help-main-search-box">
+                                <span class="main-search-icon">🔍</span>
+                                <input type="text" id="help-main-search" placeholder="Search for help or articles (e.g. 'Reset Password', 'Prescription OCR')" onkeyup="filterHelpArticles(this.value)">
+                            </div>
+                        </div>
+
+                        <!-- Browse by Category (2x2 Grid) -->
+                        <div class="help-category-section">
+                            <h2 class="help-section-heading">Browse by Category</h2>
+
+                            <div class="help-category-grid">
+                                <!-- Category 1: Getting Started -->
+                                <div class="help-cat-card" onclick="openHelpArticle('Getting Started Guide')">
+                                    <div class="cat-card-header">
+                                        <div class="cat-icon-badge rocket-bg">🚀</div>
+                                        <h3>Getting Started</h3>
+                                    </div>
+                                    <ul class="cat-links-list">
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Creating your account'); event.stopPropagation();">Creating your account</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Navigating the Patient Portal'); event.stopPropagation();">Navigating the Patient Portal</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Updating your profile info'); event.stopPropagation();">Updating your profile info</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Category 2: Prescription OCR -->
+                                <div class="help-cat-card" onclick="openHelpArticle('Prescription OCR Guide')">
+                                    <div class="cat-card-header">
+                                        <div class="cat-icon-badge scan-bg">🔲</div>
+                                        <h3>Prescription OCR</h3>
+                                    </div>
+                                    <ul class="cat-links-list">
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('How to scan a label'); event.stopPropagation();">How to scan a label</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Fixing scanning errors'); event.stopPropagation();">Fixing scanning errors</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Supported prescription formats'); event.stopPropagation();">Supported prescription formats</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Category 3: Security & Privacy -->
+                                <div class="help-cat-card" onclick="openHelpArticle('Security & Privacy')">
+                                    <div class="cat-card-header">
+                                        <div class="cat-icon-badge security-bg">🛡️</div>
+                                        <h3>Security & Privacy</h3>
+                                    </div>
+                                    <ul class="cat-links-list">
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Data encryption standards'); event.stopPropagation();">Data encryption standards</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Managing app permissions'); event.stopPropagation();">Managing app permissions</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('HIPAA compliance overview'); event.stopPropagation();">HIPAA compliance overview</a></li>
+                                    </ul>
+                                </div>
+
+                                <!-- Category 4: Emergency Mode -->
+                                <div class="help-cat-card emergency-cat-card" onclick="openHelpArticle('Emergency Mode Guide')">
+                                    <div class="cat-card-header">
+                                        <div class="cat-icon-badge emergency-icon-bg">✳️</div>
+                                        <h3 class="emergency-cat-title">Emergency Mode</h3>
+                                    </div>
+                                    <ul class="cat-links-list emergency-links">
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Activating Emergency Protocols'); event.stopPropagation();">Activating Emergency Protocols</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Sharing data with EMTs'); event.stopPropagation();">Sharing data with EMTs</a></li>
+                                        <li><a href="javascript:void(0)" onclick="openHelpArticle('Emergency contacts setup'); event.stopPropagation();">Emergency contacts setup</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Need More Help? -->
+                        <div class="help-contact-section">
+                            <h2 class="help-section-heading">Need more help?</h2>
+
+                            <div class="help-contact-grid">
+                                <!-- Action 1: Pharmacist Live Chat -->
+                                <div class="help-contact-card" onclick="switchTab('chat')">
+                                    <div class="contact-card-icon">💬</div>
+                                    <div class="contact-card-info">
+                                        <strong>Chat with a Pharmacist</strong>
+                                        <span>Available 24/7</span>
+                                    </div>
+                                </div>
+
+                                <!-- Action 2: Email Support -->
+                                <div class="help-contact-card" onclick="switchHelpSubView('support')">
+                                    <div class="contact-card-icon">✉️</div>
+                                    <div class="contact-card-info">
+                                        <strong>Report an Issue</strong>
+                                        <span>Create Support Ticket</span>
+                                    </div>
+                                </div>
+
+                                <!-- Action 3: Call Helpline -->
+                                <div class="help-contact-card" onclick="showToast('📞 Calling MediLink Helpline: 1-800-MED-LINK / 16263')">
+                                    <div class="contact-card-icon">📞</div>
+                                    <div class="contact-card-info">
+                                        <strong>Call Helpline</strong>
+                                        <span>1-800-MED-LINK</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Subview 2: Support Center (Report an Issue) -->
+                    <div id="help-subview-support" class="help-subview">
+                        <!-- Top Support Header Bar -->
+                        <div class="support-top-header">
+                            <h2 class="support-page-title">Support Center</h2>
+                            <div class="help-header-actions">
+                                <div class="notification-dropdown-wrapper" style="position:relative;">
+                                    <button class="icon-circle-btn" id="btn-notification-bell-support" onclick="toggleNotificationDropdown(event, 'support')" title="Notifications">
+                                        🔔
+                                        <span class="notification-count-badge notif-badge-support" style="display:none;">0</span>
+                                    </button>
+
+                                    <!-- Dropdown Panel (Screenshot Exact Replica) -->
+                                    <div class="notification-dropdown-menu" id="notification-dropdown-menu-support">
+                                        <div class="notification-dropdown-header">
+                                            <h4 class="notif-header-title">Notifications</h4>
+                                            <div style="display:flex; align-items:center; gap:8px;">
+                                                <button type="button" class="btn-clear-notifs-text" onclick="clearAllNotifications()" title="Clear all notifications" style="background:none; border:none; color:#ef4444; font-size:0.75rem; font-weight:700; cursor:pointer;">Clear All</button>
+                                                <button type="button" class="btn-mark-all-read" onclick="markAllNotificationsAsRead()" title="Mark all as read">✓</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="notification-items-list">
+                                            <!-- Dynamically loaded by renderNotifications() -->
+                                        </div>
+
+                                        <div class="notification-dropdown-footer">
+                                            <button type="button" class="btn-see-all-notifs" onclick="showAllNotificationsModal()">See all</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="icon-circle-btn" onclick="showToast('Recent reports: Prescription Scan Failed, App crashed')" title="Recent History">🕒</button>
+                                <div class="support-user-avatar-img" onclick="switchTab('settings')" title="My Profile">
+                                    <img id="support-avatar-img" src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=160&auto=format&fit=crop&q=80" alt="Avatar">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2-Column Support Layout -->
+                        <div class="support-layout-grid">
+                            <!-- Left Column: Report an Issue Form -->
+                            <div class="support-form-card">
+                                <h1 class="support-form-title">Report an Issue</h1>
+                                <p class="support-form-sub">Please provide details about the problem you are experiencing. Our team will review your report shortly.</p>
+
+                                <form id="support-issue-form" onsubmit="event.preventDefault(); submitSupportReport();">
+                                    <div class="support-form-row-2">
+                                        <div class="support-field-box">
+                                            <label>Issue Category</label>
+                                            <select id="support-category" required>
+                                                <option value="" disabled selected>Select a category...</option>
+                                                <option value="Prescription OCR">Prescription OCR & Scanning</option>
+                                                <option value="Medicine Availability">Medicine Finder & Stock</option>
+                                                <option value="Account & Login">Account & Login</option>
+                                                <option value="Emergency Mode">Emergency Mode Protocols</option>
+                                                <option value="Appointments & Reminders">Appointments & Reminders</option>
+                                                <option value="Other">Other Technical Issue</option>
+                                            </select>
+                                        </div>
+                                        <div class="support-field-box">
+                                            <label>Severity Level</label>
+                                            <div class="severity-radio-group">
+                                                <label class="severity-radio-label">
+                                                    <input type="radio" name="severity" value="Low">
+                                                    <span>Low</span>
+                                                </label>
+                                                <label class="severity-radio-label">
+                                                    <input type="radio" name="severity" value="Medium" checked>
+                                                    <span>Medium</span>
+                                                </label>
+                                                <label class="severity-radio-label">
+                                                    <input type="radio" name="severity" value="High/Urgent">
+                                                    <span>High/Urgent</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="support-field-box full-width">
+                                        <label>Issue Subject</label>
+                                        <input type="text" id="support-subject" placeholder="Brief summary of the issue" required>
+                                    </div>
+
+                                    <div class="support-field-box full-width">
+                                        <label>Detailed Description</label>
+                                        <textarea id="support-description" rows="4" placeholder="Please describe what you were trying to do, what happened, and any error messages..." required></textarea>
+                                    </div>
+
+                                    <div class="support-field-box full-width">
+                                        <label>Attachments (Optional)</label>
+                                        <div class="support-attachment-dropzone" onclick="triggerSupportFileUpload()">
+                                            <input type="file" id="support-attach-file" accept="image/*,.pdf" style="display:none;" onchange="handleSupportAttachment(event)">
+                                            <div class="dropzone-content">
+                                                <span class="dropzone-cloud-icon">☁️</span>
+                                                <p><span class="upload-link-text">Upload a file</span> or drag and drop</p>
+                                                <small id="support-attachment-filename">PNG, JPG, PDF up to 100MB</small>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="support-form-actions">
+                                        <button type="button" class="btn btn-secondary" onclick="resetSupportForm()">Cancel</button>
+                                        <button type="submit" class="btn btn-primary btn-submit-report">
+                                            <span>✈️</span> Submit Report
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Right Column: Recent Reports -->
+                            <div class="support-recent-card">
+                                <div class="recent-reports-header">
+                                    <h3><span>🕒</span> Recent Reports</h3>
+                                </div>
+
+                                <div class="recent-reports-list" id="recent-reports-list">
+                                    <!-- Ticket 1 -->
+                                    <div class="recent-report-item">
+                                        <div class="report-meta-row">
+                                            <span class="report-status-badge badge-in-review">In Review</span>
+                                            <span class="report-date">Oct 12</span>
+                                        </div>
+                                        <h4 class="report-item-title">Prescription Scan Failed</h4>
+                                        <p class="report-item-snippet">The scanner did not recognize the barcode on my new medication bottle.</p>
+                                    </div>
+
+                                    <!-- Ticket 2 -->
+                                    <div class="recent-report-item">
+                                        <div class="report-meta-row">
+                                            <span class="report-status-badge badge-resolved">Resolved</span>
+                                            <span class="report-date">Oct 05</span>
+                                        </div>
+                                        <h4 class="report-item-title">App crashed during booking</h4>
+                                        <p class="report-item-snippet">When trying to select a time slot for Dr. Smith, the application closed...</p>
+                                    </div>
+
+                                    <!-- Ticket 3 -->
+                                    <div class="recent-report-item">
+                                        <div class="report-meta-row">
+                                            <span class="report-status-badge badge-pending">Pending</span>
+                                            <span class="report-date">Just now</span>
+                                        </div>
+                                        <h4 class="report-item-title">Login slow on mobile</h4>
+                                        <p class="report-item-snippet">Taking over 30 seconds to authenticate via FaceID.</p>
+                                    </div>
+                                </div>
+
+                                <div class="recent-reports-footer">
+                                    <button type="button" class="btn-view-all-reports" onclick="showToast('Showing all 3 active reports in your patient history.')">
+                                        View All Reports
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bottom Assurance Banner -->
+                        <div class="support-assurance-banner">
+                            <span class="assurance-shield-icon">🛡️</span>
+                            <div class="assurance-text">
+                                <strong>We take your concerns seriously</strong>
+                                <p>Our technical and clinical teams review every report within 24 hours to ensure the highest standard of care and system reliability.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shared Help & Support Footer -->
+                    <div class="help-page-footer">
+                        <div class="footer-copyright">
+                            <strong>MediLink</strong>
+                            <span>© 2024 MediLink Healthcare. All rights reserved.</span>
+                        </div>
+                        <div class="footer-legal-links">
+                            <a href="javascript:void(0)" onclick="showToast('Privacy Policy: All patient medical records and support tickets are encrypted under ISO-27001 standards.')">Privacy Policy</a>
+                            <a href="javascript:void(0)" onclick="showToast('Terms of Service: MediLink verified digital healthcare platform.')">Terms of Service</a>
+                            <a href="javascript:void(0)" onclick="showToast('Accessibility: WCAG 2.1 AA Compliant Healthcare Interface.')">Accessibility</a>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-rx-upload" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Upload Prescription</h3>
+                <button class="btn-close" onclick="closeModal('modal-rx-upload')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Doctor Name:</label>
+                    <input type="text" id="rx-doctor-input" value="Dr. Mohammad Harun-ur-Rashid (MD)">
+                </div>
+                <div class="input-group">
+                    <label>Hospital / Clinic:</label>
+                    <input type="text" id="rx-hospital-input" value="Dhaka Medical College & Hospital">
+                </div>
+                <div class="input-group">
+                    <label>Prescription Text (Simulated OCR / Upload):</label>
+                    <textarea id="rx-text-input" rows="4">Rx:
+1. Tab Napa Extra 500mg (1+1+1) - 5 days
+2. Cap Seclo 20mg (1+0+1 before meal) - 7 days
+3. Tab Monas 10mg (0+0+1 night) - 14 days</textarea>
+                </div>
+                <div class="input-group" style="margin-top:14px;">
+                    <label style="display:flex; justify-content:space-between; align-items:center;">
+                        <span>🎙️ Patient Voice Note (Audio Memo):</span>
+                        <small class="text-muted">Optional</small>
+                    </label>
+                    <div class="voice-recorder-widget" id="rx-voice-widget-modal">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button type="button" class="btn btn-secondary btn-sm" id="btn-record-voice-modal" onclick="toggleVoiceRecording('modal')">
+                                <span id="rec-btn-text-modal">🎙️ Record Voice Note</span>
+                            </button>
+                            <label class="btn btn-secondary btn-sm" style="margin:0; cursor:pointer;" title="Upload existing audio file">
+                                📁 Attach Audio
+                                <input type="file" accept="audio/*" style="display:none;" onchange="handleVoiceAudioFile(event, 'modal')">
+                            </label>
+                            <span id="voice-timer-modal" style="font-size:0.85rem; font-weight:700; color:#ef4444; display:none;">● 00:00</span>
+                        </div>
+                        <div id="voice-preview-box-modal" style="margin-top:8px; display:none; align-items:center; gap:10px;">
+                            <audio id="voice-audio-preview-modal" controls style="height:32px; flex:1;"></audio>
+                            <button type="button" class="btn-clear-voice" onclick="clearVoiceRecording('modal')" title="Discard voice note" style="background:none; border:none; color:#ef4444; font-size:1.1rem; cursor:pointer;">&times;</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-rx-upload')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitPrescriptionUpload()">Upload & Extract</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Cross-Pharmacy Price Comparison -->
+    <div id="modal-price-compare" class="modal-overlay">
+        <div class="modal-card modal-price-compare-card" style="max-width: 680px;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:1.5rem;">🏷️</span>
+                    <div>
+                        <h3 id="price-compare-title" style="margin:0;">Cross-Pharmacy Price Comparison</h3>
+                        <p id="price-compare-sub" class="text-muted" style="margin:2px 0 0; font-size:0.82rem;">Comparing live inventory pricing across verified pharmacies</p>
+                    </div>
+                </div>
+                <button class="btn-close" onclick="closeModal('modal-price-compare')">&times;</button>
+            </div>
+            <div class="modal-body" style="max-height: 70vh; overflow-y: auto; padding: 16px 20px;">
+                <!-- Medicine Summary Banner -->
+                <div id="price-compare-banner" class="price-compare-summary-banner">
+                    <!-- Populated dynamically -->
+                </div>
+
+                <!-- Strategy Pattern Callout -->
+                <div class="strategy-badge-note">
+                    <span>⚡ <strong>Strategy Pattern Applied:</strong> <code>Best Price Strategy</code> sorts active pharmacy stocks ascending to find the best deal in Dhaka.</span>
+                </div>
+
+                <!-- Pharmacies List Container -->
+                <h4 style="margin: 16px 0 8px; font-size: 0.95rem; color: var(--text-heading, #1e293b);">Available Pharmacies in Dhaka:</h4>
+                <div id="price-compare-list" class="price-compare-items-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+                <span class="text-muted" style="font-size:0.8rem;">Prices synchronized live with PostgreSQL & Observer streams.</span>
+                <button class="btn btn-secondary" onclick="closeModal('modal-price-compare')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-stock-update" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Update Pharmacy Stock</h3>
+                <button class="btn-close" onclick="closeModal('modal-stock-update')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="update-stock-id">
+                <p id="update-stock-med-name" class="font-bold"></p>
+                <div class="input-group">
+                    <label>New Quantity (Units):</label>
+                    <input type="number" id="update-stock-qty" min="0" max="1000">
+                </div>
+                <small class="text-muted">Saving will automatically notify all active observers via the Observer pattern.</small>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-stock-update')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitStockUpdate()">Update & Broadcast</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal: Edit Medical ID Data (All 3 Sections) -->
+    <div id="modal-edit-medical-id" class="modal-overlay">
+        <div class="modal-card" style="max-width: 480px;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="color:#ef4444; font-size:1.2rem; font-weight:bold;">♡</span>
+                    <h3 style="margin:0;">Edit Medical ID</h3>
+                </div>
+                <button class="btn-close" onclick="closeModal('modal-edit-medical-id')">&times;</button>
+            </div>
+            <div class="modal-body" style="display:flex; flex-direction:column; gap:16px;">
+                <div class="input-group">
+                    <label style="font-weight:700; color:#334155;">Blood Type</label>
+                    <select id="edit-med-blood" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1; width:100%; font-size:0.95rem;">
+                        <option value="O Positive">O Positive (O+)</option>
+                        <option value="O Negative">O Negative (O-)</option>
+                        <option value="A Positive">A Positive (A+)</option>
+                        <option value="A Negative">A Negative (A-)</option>
+                        <option value="B Positive">B Positive (B+)</option>
+                        <option value="B Negative">B Negative (B-)</option>
+                        <option value="AB Positive">AB Positive (AB+)</option>
+                        <option value="AB Negative">AB Negative (AB-)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label style="font-weight:700; color:#334155;">Known Allergies (comma-separated)</label>
+                    <input type="text" id="edit-med-allergies" placeholder="e.g. Penicillin, Latex, Peanuts, Sulfa" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1; width:100%; font-size:0.95rem;">
+                    <small style="color:#64748b; font-size:0.75rem;">Separate multiple allergies with commas.</small>
+                </div>
+
+                <div class="input-group">
+                    <label style="font-weight:700; color:#334155;">Chronic Conditions (comma-separated)</label>
+                    <input type="text" id="edit-med-chronic" placeholder="e.g. Asthma (Mild), Hypertension, Diabetes" style="padding:10px; border-radius:8px; border:1px solid #cbd5e1; width:100%; font-size:0.95rem;">
+                    <small style="color:#64748b; font-size:0.75rem;">Separate multiple conditions with commas.</small>
+                </div>
+            </div>
+            <div class="modal-footer" style="display:flex; justify-content:flex-end; gap:10px;">
+                <button type="button" class="btn btn-secondary" onclick="closeModal('modal-edit-medical-id')">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="submitEditMedicalId()">Save Medical Data</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-reminder" class="modal-overlay">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3>Schedule Medicine Reminder</h3>
+                <button class="btn-close" onclick="closeModal('modal-reminder')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Medicine Name:</label>
+                    <input type="text" id="rem-med-name" placeholder="e.g. Napa Extra">
+                </div>
+                <div class="input-group">
+                    <label>Dosage:</label>
+                    <input type="text" id="rem-dosage" placeholder="e.g. 1 Tablet (500mg)">
+                </div>
+                <div class="input-group">
+                    <label>Scheduled Time:</label>
+                    <input type="time" id="rem-time" value="08:00">
+                </div>
+                <div class="input-group">
+                    <label>Frequency:</label>
+                    <select id="rem-freq">
+                        <option value="DAILY">Daily</option>
+                        <option value="TWICE_DAILY">Twice Daily</option>
+                        <option value="WEEKLY">Weekly</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Special Instructions:</label>
+                    <input type="text" id="rem-instructions" value="Take with full glass of water after food">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-reminder')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitNewReminder()">Save Reminder</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Article Reader Modal -->
+    <div id="modal-help-article" class="modal-overlay">
+        <div class="modal-card" style="max-width: 560px;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.2rem;">📖</span>
+                    <h3 id="help-modal-title" style="margin:0;">Help Guide</h3>
+                </div>
+                <button class="btn-close" onclick="closeModal('modal-help-article')">&times;</button>
+            </div>
+            <div class="modal-body" id="help-modal-body" style="line-height:1.6; color:#334155; font-size:0.92rem;">
+                <!-- Dynamically filled -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-help-article')">Close</button>
+                <button class="btn btn-primary" onclick="switchTab('chat'); closeModal('modal-help-article');">Chat with Pharmacist</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Email Support Modal -->
+    <div id="modal-help-email" class="modal-overlay">
+        <div class="modal-card" style="max-width: 500px;">
+            <div class="modal-header">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:1.2rem;">✉️</span>
+                    <h3 style="margin:0;">Email Support Team</h3>
+                </div>
+                <button class="btn-close" onclick="closeModal('modal-help-email')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="input-group">
+                    <label>Your Email:</label>
+                    <input type="email" id="help-email-sender" readonly style="background:#f8fafc;">
+                </div>
+                <div class="input-group">
+                    <label>Subject / Topic:</label>
+                    <input type="text" id="help-email-subject" placeholder="e.g. Issue with prescription scan">
+                </div>
+                <div class="input-group">
+                    <label>Describe your question or issue:</label>
+                    <textarea id="help-email-message" rows="4" placeholder="Please provide details about what you need assistance with..."></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeModal('modal-help-email')">Cancel</button>
+                <button class="btn btn-primary" onclick="submitHelpEmail()">Send Support Request</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

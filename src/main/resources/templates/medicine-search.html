@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Medicines')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Medicine alternative finder</span>
+        <h1>Search a brand, see what's inside it</h1>
+        <p>Thousands of brand names map back to a few generic ingredients. Find the same
+            medicine under different names and prices.</p>
+    </div>
+
+    <div class="card tight" style="margin-top:20px;">
+        <form method="get" action="/medicines" style="display:flex;gap:10px;">
+            <input type="text" name="q" th:value="${q}" placeholder="Type a brand name, e.g. Napa, Seclo, Alatrol, Lantus" style="margin:0;">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="card" th:if="${results != null and !results.isEmpty()}">
+        <h2>Results</h2>
+        <table>
+            <tr><th>Brand</th><th>Strength</th><th>Generic</th><th>Treats</th><th>Company</th><th>Price</th><th></th></tr>
+            <tr th:each="m : ${results}">
+                <td><strong th:text="${m.brandName}"></strong> <span class="small muted" th:text="${m.strength}"></span></td>
+                <td><span class="badge" th:text="${m.generic.name}"></span></td>
+                <td class="muted" th:text="${m.generic.treats}"></td>
+                <td th:text="${m.company}"></td>
+                <td><strong th:text="'৳' + ${m.priceBdt}"></strong></td>
+                <td><a class="btn btn-sm" th:href="@{'/medicines/' + ${m.id} + '/alternatives'}">Alternatives</a></td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="card" th:if="${results != null and results.isEmpty() and q != null}">
+        <p class="warn">No medicine found for "<span th:text="${q}"></span>". Try another spelling.</p>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

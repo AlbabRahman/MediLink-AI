@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Prescription Scanner')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Prescription scanner · OCR</span>
+        <h1>Read a prescription in seconds</h1>
+        <p class="muted">Upload a clear photo of the prescription. We read the text (OCR)
+            and match the medicines against our database.</p>
+    </div>
+
+    <div class="card card-accent" style="margin-top:20px;">
+        <p class="warn" th:if="${error}" th:text="${error}"></p>
+        <form method="post" action="/prescriptions/upload" enctype="multipart/form-data">
+            <label>Prescription photo</label>
+            <input type="file" name="file" accept="image/*" required>
+            <button type="submit">Scan prescription</button>
+        </form>
+        <p class="muted small" style="margin-bottom:0;">Demo tip: name the image with the medicines it contains,
+            e.g. <code>rx_napa_seclo.jpg</code> — if OCR software is not installed,
+            the fallback reader uses the file name so the demo always works.</p>
+    </div>
+
+    <div class="card" th:if="${history != null and !history.isEmpty()}">
+        <h2>My previous scans</h2>
+        <table>
+            <tr><th>Image</th><th>Extracted text</th><th>Uploaded</th></tr>
+            <tr th:each="p : ${history}">
+                <td><a th:href="@{'/uploads/' + ${p.imagePath}}" th:text="${p.imagePath}"></a></td>
+                <td class="muted small" th:text="${p.extractedText}"></td>
+                <td class="small muted" th:text="${#temporals.format(p.uploadedAt, 'dd MMM yyyy HH:mm')}"></td>
+            </tr>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

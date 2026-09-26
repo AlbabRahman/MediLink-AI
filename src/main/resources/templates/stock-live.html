@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Live Stock')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <!-- Live updates pushed by the stock WebSocket appear here without refresh -->
+    <div id="live-feed">
+        <span class="feed-title"><span class="dot"></span> Live updates</span>
+        <span class="muted small">changes appear instantly when a pharmacy saves stock</span>
+        <div id="live-items"><div class="muted">Waiting for updates…</div></div>
+    </div>
+
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Real-time stock</span>
+        <h1>Who has my medicine?</h1>
+    </div>
+
+    <div class="card tight" style="margin-top:16px;">
+        <form method="get" action="/stock/live" style="display:flex;gap:10px;">
+            <input type="text" name="q" th:value="${q}" placeholder="Type a brand name, e.g. Napa or Lantus" style="margin:0;">
+            <button type="submit">Check stock</button>
+        </form>
+    </div>
+
+    <div class="card" th:if="${matches != null and matches.size() > 1}">
+        <h2>Did you mean…</h2>
+        <p th:each="m : ${matches}">
+            <a th:href="@{'/stock/live?q=' + ${m.brandName}}" th:text="${m.brandName} + ' ' + ${m.strength}"></a>
+        </p>
+    </div>
+
+    <div class="card" th:if="${selected != null}">
+        <h2 th:text="${selected.brandName} + ' ' + ${selected.strength} + ' — in stock at'"></h2>
+        <table th:if="${stocks != null and !stocks.isEmpty()}">
+            <tr><th>Pharmacy</th><th>Area</th><th>Phone</th><th>Quantity</th><th>Hours</th></tr>
+            <tr th:each="s : ${stocks}">
+                <td><strong th:text="${s.pharmacy.name}"></strong></td>
+                <td th:text="${s.pharmacy.area}"></td>
+                <td><a th:href="'tel:' + ${s.pharmacy.phone}" th:text="${s.pharmacy.phone}"></a></td>
+                <td class="ok" th:text="${s.quantity} + ' pcs'"></td>
+                <td><span th:class="${s.pharmacy.open24h} ? 'badge badge-open' : 'badge badge-closed'"
+                          th:text="${s.pharmacy.open24h} ? 'Open 24h' : 'Daytime'"></span></td>
+            </tr>
+        </table>
+        <p class="warn" th:if="${stocks == null or stocks.isEmpty()}">
+            No pharmacy currently reports this medicine in stock. Try the Emergency Finder.
+        </p>
+    </div>
+</main>
+
+<!-- Only renders push messages; all logic lives in the Java server -->
+<script>
+    (function () {
+        var items = document.getElementById('live-items');
+        try {
+            var ws = new WebSocket('ws://' + location.host + '/ws/stock');
+            ws.onmessage = function (event) {
+                var data = JSON.parse(event.data);
+                if (data.type !== 'stock') return;
+                if (items.querySelector('.muted')) items.innerHTML = '';
+                var row = document.createElement('div');
+                row.textContent = data.pharmacy + ' updated ' + data.medicine + ' → ' + data.qty + ' pcs';
+                row.className = 'flash-new';
+                items.prepend(row);
+            };
+        } catch (e) { /* socket unsupported: page still works via normal search */ }
+    })();
+</script>
+</body>
+</html>

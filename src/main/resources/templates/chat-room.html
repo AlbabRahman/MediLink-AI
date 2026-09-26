@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Chat with ' + ${partner.name})}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker" th:text="${partner.role.name() == 'PHARMACIST'} ? 'Pharmacist · advice, not a prescription' : 'Patient'">Chat</span>
+        <h1 th:text="${partner.name}"></h1>
+    </div>
+
+    <div class="card" style="margin-top:18px;">
+        <div id="chat-box">
+            <div th:each="m : ${messages}"
+                 th:class="${m.sender.id == me.id} ? 'msg mine' : 'msg theirs'">
+                <span th:text="${m.content}"></span>
+                <span class="meta" th:text="${#temporals.format(m.sentAt, 'dd MMM HH:mm')}"></span>
+            </div>
+        </div>
+
+        <form id="chat-form" onsubmit="return false;">
+            <input type="text" id="chat-input" placeholder="Type a message…" autocomplete="off">
+            <button id="chat-send" type="button">Send</button>
+        </form>
+    </div>
+</main>
+
+<!-- Renders socket messages only; sending goes through the Java chat handler -->
+<script th:inline="javascript">
+    (function () {
+        var myId = [[${me.id}]];
+        var partnerId = [[${partner.id}]];
+        var box = document.getElementById('chat-box');
+        var input = document.getElementById('chat-input');
+        box.scrollTop = box.scrollHeight;
+
+        function addMessage(text, mine, at) {
+            var div = document.createElement('div');
+            div.className = mine ? 'msg mine' : 'msg theirs';
+            var span = document.createElement('span');
+            span.textContent = text;
+            var meta = document.createElement('span');
+            meta.className = 'meta';
+            meta.textContent = at || '';
+            div.appendChild(span);
+            div.appendChild(meta);
+            box.appendChild(div);
+            box.scrollTop = box.scrollHeight;
+        }
+
+        var ws = new WebSocket('ws://' + location.host + '/ws/chat');
+
+        ws.onmessage = function (event) {
+            var data = JSON.parse(event.data);
+            if (data.type !== 'chat') return;
+            if (data.from !== partnerId && data.from !== myId) return;
+            addMessage(data.text, data.from === myId, data.at);
+        };
+
+        function send() {
+            var text = input.value.trim();
+            if (!text || ws.readyState !== 1) return;
+            ws.send(JSON.stringify({to: partnerId, text: text}));
+            input.value = '';
+            input.focus();
+        }
+
+        document.getElementById('chat-send').onclick = send;
+        input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send(); });
+    })();
+</script>
+</body>
+</html>

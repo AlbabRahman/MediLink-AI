@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In — MediLink AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue: #1d4ed8;
+            --blue-dark: #1e40af;
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --green: #16a34a;
+            --red: #dc2626;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #eff6ff 0%, #f1f5f9 50%, #eef2ff 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .brand { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; cursor: pointer; }
+        .brand-logo {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: linear-gradient(135deg, #2563eb, var(--blue-dark));
+            color: #fff; display: flex; align-items: center; justify-content: center;
+            font-size: 1.3rem; font-weight: 800;
+        }
+        .brand h1 { font-size: 1.4rem; color: var(--text); }
+        .brand h1 span { color: var(--blue); }
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+            width: 100%; max-width: 420px;
+            padding: 32px;
+        }
+        .card h2 { font-size: 1.35rem; color: var(--text); margin-bottom: 4px; }
+        .card .sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 22px; }
+        .tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 22px; }
+        .tabs button {
+            flex: 1; border: none; background: transparent; padding: 10px;
+            border-radius: 8px; font-weight: 700; font-size: 0.9rem;
+            color: var(--muted); cursor: pointer;
+        }
+        .tabs button.active { background: var(--blue); color: #fff; }
+        .field { margin-bottom: 14px; }
+        .field label { display: block; font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+        .field input, .field select {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            font-size: 0.95rem; color: var(--text); background: #fff;
+            outline: none; transition: border-color 0.15s;
+        }
+        .field input:focus, .field select:focus { border-color: var(--blue); }
+        .btn-main {
+            width: 100%; padding: 12px; margin-top: 6px;
+            background: var(--blue); color: #fff; border: none;
+            border-radius: 10px; font-weight: 800; font-size: 1rem; cursor: pointer;
+        }
+        .btn-main:hover { background: var(--blue-dark); }
+        .btn-main:disabled { opacity: 0.6; cursor: wait; }
+        .msg { display: none; margin-top: 14px; padding: 10px 14px; border-radius: 10px; font-size: 0.88rem; font-weight: 600; }
+        .msg.err { display: block; background: #fef2f2; color: var(--red); border: 1px solid #fecaca; }
+        .msg.ok { display: block; background: #f0fdf4; color: var(--green); border: 1px solid #bbf7d0; }
+        .divider { text-align: center; color: var(--muted); font-size: 0.78rem; margin: 18px 0 12px; }
+        .demo-row { display: flex; gap: 8px; }
+        .demo-btn {
+            flex: 1; padding: 9px 4px; font-size: 0.78rem; font-weight: 700;
+            border: 1.5px solid var(--border); border-radius: 10px;
+            background: var(--bg); color: var(--text); cursor: pointer;
+        }
+        .demo-btn:hover { border-color: var(--blue); color: var(--blue); }
+        .back { margin-top: 20px; color: var(--muted); font-size: 0.85rem; text-decoration: none; }
+        .back:hover { color: var(--blue); }
+        #signup-only { display: none; }
+    </style>
+</head>
+<body>
+    <div class="brand" onclick="location.href='landing.html'">
+        <div class="brand-logo">M+</div>
+        <h1>MediLink <span>AI</span></h1>
+    </div>
+
+    <div class="card">
+        <h2 id="card-title">Welcome back</h2>
+        <p class="sub" id="card-sub">Sign in to your Smart Health Assistant.</p>
+
+        <div class="tabs">
+            <button id="tab-signin" class="active" onclick="setMode('signin')">Sign In</button>
+            <button id="tab-signup" onclick="setMode('signup')">Create Account</button>
+        </div>
+
+        <form id="auth-form" onsubmit="return false;">
+            <div class="field" id="signup-only">
+                <label for="f-name">Full name</label>
+                <input type="text" id="f-name" placeholder="e.g. Rahim Ahmed" autocomplete="name">
+            </div>
+            <div class="field">
+                <label for="f-email">Email</label>
+                <input type="email" id="f-email" placeholder="you@example.com" autocomplete="email">
+            </div>
+            <div class="field">
+                <label for="f-password">Password</label>
+                <input type="password" id="f-password" placeholder="At least 8 characters" autocomplete="current-password">
+            </div>
+            <div class="field" id="signup-role">
+                <label for="f-role">I am a</label>
+                <select id="f-role">
+                    <option value="PATIENT">Patient</option>
+                    <option value="PHARMACIST">Pharmacist</option>
+                </select>
+            </div>
+            <button class="btn-main" id="btn-submit" onclick="submitForm()">Sign In</button>
+        </form>
+
+        <div class="msg" id="msg"></div>
+
+        <div class="divider">— or try a demo account —</div>
+        <div class="demo-row">
+            <button class="demo-btn" onclick="demo('patient@test.com','1234')">👤 Patient</button>
+            <button class="demo-btn" onclick="demo('pharma@test.com','1234')">🩺 Pharmacist</button>
+            <button class="demo-btn" onclick="demo('admin@test.com','1234')">🛡️ Admin</button>
+        </div>
+    </div>
+
+    <a class="back" href="landing.html">← Back to home</a>
+
+<script>
+let mode = 'signin';
+
+function setMode(m) {
+    mode = m;
+    document.getElementById('tab-signin').classList.toggle('active', m === 'signin');
+    document.getElementById('tab-signup').classList.toggle('active', m === 'signup');
+    document.getElementById('signup-only').style.display = m === 'signup' ? 'block' : 'none';
+    document.getElementById('signup-role').style.display = m === 'signup' ? 'block' : 'none';
+    document.getElementById('card-title').textContent = m === 'signup' ? 'Create your account' : 'Welcome back';
+    document.getElementById('card-sub').textContent = m === 'signup'
+        ? 'Join MediLink — free for patients and pharmacists.'
+        : 'Sign in to your Smart Health Assistant.';
+    document.getElementById('btn-submit').textContent = m === 'signup' ? 'Create Account' : 'Sign In';
+    clearMsg();
+}
+
+function showMsg(text, ok) {
+    const el = document.getElementById('msg');
+    el.textContent = text;
+    el.className = 'msg ' + (ok ? 'ok' : 'err');
+}
+function clearMsg() { document.getElementById('msg').className = 'msg'; }
+
+async function submitForm() {
+    clearMsg();
+    const email = document.getElementById('f-email').value.trim();
+    const password = document.getElementById('f-password').value;
+    const btn = document.getElementById('btn-submit');
+    if (!email || !password) { showMsg('Please enter your email and password.'); return; }
+    if (mode === 'signup' && password.length < 8) { showMsg('Password must be at least 8 characters.'); return; }
+
+    btn.disabled = true;
+    try {
+        if (mode === 'signin') {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password })
+            });
+            const data = await res.json();
+            if (data.status === 'SUCCESS') {
+                sessionStorage.setItem('medilink_user', JSON.stringify(data));
+                showMsg('Signed in! Opening your dashboard...', true);
+                setTimeout(() => location.href = 'dashboard.html', 400);
+            } else {
+                showMsg(data.message || 'Sign in failed.');
+            }
+        } else {
+            const name = document.getElementById('f-name').value.trim();
+            const role = document.getElementById('f-role').value;
+            if (!name) { showMsg('Please enter your full name.'); btn.disabled = false; return; }
+            const res = await fetch('/api/auth/register', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name: name, email: email, password: password, role: role, extra: '' })
+            });
+            const data = await res.json();
+            if (data.status === 'SUCCESS') {
+                sessionStorage.setItem('medilink_user', JSON.stringify(data));
+                showMsg('Account created! Opening your dashboard...', true);
+                setTimeout(() => location.href = 'dashboard.html', 400);
+            } else {
+                showMsg(data.message || 'Registration failed.');
+            }
+        }
+    } catch (e) {
+        showMsg('Cannot reach the server. Is it running?');
+    }
+    btn.disabled = false;
+}
+
+function demo(email, password) {
+    setMode('signin');
+    document.getElementById('f-email').value = email;
+    document.getElementById('f-password').value = password;
+    submitForm();
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Scan Result')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Scan result</span>
+        <h1>What we found</h1>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <p><img class="prescription-img" th:src="${imageUrl}" alt="prescription"></p>
+        <h2>Text we read</h2>
+        <p class="muted" th:text="${prescription.extractedText}"></p>
+    </div>
+
+    <div class="card">
+        <h2>Medicines found on this prescription</h2>
+        <table th:if="${matched != null and !matched.isEmpty()}">
+            <tr><th>Brand</th><th>Strength</th><th>Generic</th><th>Treats</th><th>Price</th><th></th></tr>
+            <tr th:each="m : ${matched}">
+                <td><strong th:text="${m.brandName}"></strong></td>
+                <td th:text="${m.strength}"></td>
+                <td><span class="badge" th:text="${m.generic.name}"></span></td>
+                <td class="muted" th:text="${m.generic.treats}"></td>
+                <td><strong th:text="'৳' + ${m.priceBdt}"></strong></td>
+                <td><a class="btn btn-sm" th:href="@{'/medicines/' + ${m.id} + '/alternatives'}">Alternatives</a></td>
+            </tr>
+        </table>
+        <p class="warn" th:if="${matched == null or matched.isEmpty()}">
+            No known medicine names were found in the scanned text. Try a clearer photo.
+        </p>
+        <p class="muted small" style="margin-bottom:0;">Always confirm the final medicine list with your doctor or pharmacist.</p>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

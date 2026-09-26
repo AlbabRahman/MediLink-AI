@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Verification Result')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="card verdict" th:if="${result.verdict.name() == 'VALID'}">
+        <span class="stamp stamp-valid">VALID</span>
+        <h1>Genuine medicine</h1>
+        <p class="muted" style="max-width:420px;margin:0 auto 20px;">This pack matches an officially registered batch.</p>
+        <table style="max-width:520px;margin:0 auto;">
+            <tr><th>Medicine</th><td th:text="${result.batch.medicine.brandName} + ' ' + ${result.batch.medicine.strength}"></td></tr>
+            <tr><th>Generic</th><td th:text="${result.batch.medicine.generic.name}"></td></tr>
+            <tr><th>Manufacturer</th><td th:text="${result.batch.manufacturer}"></td></tr>
+            <tr><th>Batch no</th><td th:text="${result.batch.batchNo}"></td></tr>
+            <tr><th>Manufactured</th><td th:text="${result.batch.mfgDate}"></td></tr>
+            <tr><th>Expires</th><td class="ok" th:text="${result.batch.expiryDate}"></td></tr>
+        </table>
+    </div>
+
+    <div class="card verdict" th:if="${result.verdict.name() == 'EXPIRED'}">
+        <span class="stamp stamp-expired">EXPIRED</span>
+        <h1>Expired medicine — do not use</h1>
+        <p class="muted" style="max-width:420px;margin:0 auto 20px;">This pack was genuine but has passed its expiry date.</p>
+        <table style="max-width:520px;margin:0 auto;">
+            <tr><th>Medicine</th><td th:text="${result.batch.medicine.brandName} + ' ' + ${result.batch.medicine.strength}"></td></tr>
+            <tr><th>Manufacturer</th><td th:text="${result.batch.manufacturer}"></td></tr>
+            <tr><th>Batch no</th><td th:text="${result.batch.batchNo}"></td></tr>
+            <tr><th>Expired on</th><td class="warn" th:text="${result.batch.expiryDate}"></td></tr>
+        </table>
+        <p class="muted small">Please return this pack to the pharmacy and ask for a fresh one.</p>
+    </div>
+
+    <div class="card verdict" th:if="${result.verdict.name() == 'NOT_FOUND'}">
+        <span class="stamp stamp-fake">FAKE?</span>
+        <h1>Not in the official database</h1>
+        <p class="muted" style="max-width:460px;margin:0 auto 20px;">
+            The code "<strong th:text="${code}"></strong>" does not match any registered batch.
+            Do not consume this medicine.</p>
+        <p class="muted small">Report it to the pharmacy and to the Directorate General of
+            Drug Administration (DGDA), Bangladesh.</p>
+    </div>
+
+    <p style="text-align:center;">
+        <a class="btn btn-secondary" href="/verify">Check another pack</a>
+        <a class="btn" href="/home">Back to home</a>
+    </p>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

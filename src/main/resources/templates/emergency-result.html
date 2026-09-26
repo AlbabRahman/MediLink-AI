@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Emergency Result')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker kicker-danger">Emergency mode</span>
+        <h1 th:text="${medicine.brandName} + ' ' + ${medicine.strength} + ' near ' + ${area}"></h1>
+        <div th:if="${nearest != null}">
+            <p>Nearest in stock: <strong th:text="${nearest.name}"></strong>
+                (<span th:text="${nearest.area}"></span>) ·
+                <a th:href="${shareUrl}" target="_blank">share this location with a contact</a></p>
+        </div>
+        <p class="warn" th:if="${nearest == null}">
+            No pharmacy currently has this medicine in stock. Please call pharmacies directly
+            or ask a doctor about an alternative.
+        </p>
+    </div>
+
+    <div class="card" th:if="${nearest != null}" style="padding:10px;">
+        <!-- Free OpenStreetMap embed, no JavaScript needed -->
+        <iframe class="map-frame" th:src="${mapUrl}"></iframe>
+    </div>
+
+    <div class="card" th:if="${stocks != null and !stocks.isEmpty()}">
+        <h2>All pharmacies with stock (nearest first)</h2>
+        <table>
+            <tr><th>#</th><th>Pharmacy</th><th>Area</th><th>Distance</th><th>Qty</th><th>Phone</th><th>Hours</th></tr>
+            <tr th:each="s, stat : ${stocks}">
+                <td class="muted" th:text="${stat.count}"></td>
+                <td><strong th:text="${s.pharmacy.name}"></strong></td>
+                <td th:text="${s.pharmacy.area}"></td>
+                <td><span class="badge" th:text="${distances[s.id]} + ' km'"></span></td>
+                <td class="ok" th:text="${s.quantity}"></td>
+                <td><a th:href="'tel:' + ${s.pharmacy.phone}" th:text="${s.pharmacy.phone}"></a></td>
+                <td><span th:class="${s.pharmacy.open24h} ? 'badge badge-open' : 'badge badge-closed'"
+                          th:text="${s.pharmacy.open24h} ? 'Open 24h' : 'Daytime'"></span></td>
+            </tr>
+        </table>
+        <p class="muted small" style="margin-bottom:0;">In an emergency, call the pharmacy before travelling to confirm the stock.</p>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

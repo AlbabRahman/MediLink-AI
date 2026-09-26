@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediLink | Your Health, Connected in One Place</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- PWA: installable mobile app (Add to Home Screen) -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1d4ed8">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <!-- Immediate Theme Initialization to Prevent FOUC -->
+    <script>
+        (function() {
+            try {
+                const savedTheme = localStorage.getItem('medilink_theme');
+                const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme === 'dark' || (!savedTheme && systemPrefersDark)) {
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                    document.documentElement.classList.add('dark-mode');
+                } else {
+                    document.documentElement.setAttribute('data-theme', 'light');
+                    document.documentElement.classList.remove('dark-mode');
+                }
+            } catch (e) {}
+        })();
+    </script>
+</head>
+<body class="landing-body">
+
+    <!-- View Container: Landing Page View -->
+    <div id="view-landing" class="view-section active">
+        
+        <!-- Top Navigation Bar (Screenshot 1) -->
+        <header class="landing-header">
+            <div class="nav-content max-width-container">
+                <a href="#hero" class="brand-logo">
+                    <div class="logo-shield">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm1 14h-2v-4H7V10h4V6h2v4h4v2h-4v4z"/>
+                        </svg>
+                    </div>
+                    <span class="logo-text">MediLink</span>
+                </a>
+
+                <nav class="nav-links">
+                    <a href="#features" class="nav-link active">Features</a>
+                    <a href="#how-it-works" class="nav-link">How It Works</a>
+                    <a href="#for-patients" class="nav-link">For Patients</a>
+                    <a href="#for-pharmacists" class="nav-link">For Pharmacists</a>
+                    <a href="#about" class="nav-link">About</a>
+                </nav>
+
+                <div class="nav-actions" id="landing-nav-actions" style="display:flex; align-items:center; gap:14px;">
+                    <!-- Premium Theme Switcher (Landing) -->
+                    <button type="button" class="premium-theme-switch" id="landing-theme-switch" onclick="toggleTheme()" aria-label="Toggle theme mode" title="Toggle Light / Dark Mode [Ctrl+Shift+D]" role="switch" aria-checked="false">
+                        <div class="pts-track">
+                            <span class="pts-icon pts-sun-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                                    <circle cx="12" cy="12" r="4.5" fill="#f59e0b"></circle>
+                                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+                                </svg>
+                            </span>
+                            <div class="pts-stars" aria-hidden="true">
+                                <span class="pts-star pts-star-1">✦</span>
+                                <span class="pts-star pts-star-2">★</span>
+                                <span class="pts-star pts-star-3">✦</span>
+                            </div>
+                            <span class="pts-icon pts-moon-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+                                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                </svg>
+                            </span>
+                            <div class="pts-thumb">
+                                <div class="pts-thumb-sun" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                                        <circle cx="12" cy="12" r="4.5" fill="#f59e0b" stroke="#d97706"></circle>
+                                        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" stroke="#d97706"></path>
+                                    </svg>
+                                </div>
+                                <div class="pts-thumb-moon" aria-hidden="true">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="#e0e7ff" stroke="#a5b4fc" stroke-width="1.8">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                                    </svg>
+                                </div>
+                                <span class="pts-thumb-glow"></span>
+                            </div>
+                        </div>
+                    </button>
+                    <div id="nav-guest-buttons" style="display:flex; align-items:center; gap:12px;">
+                        <button class="btn-text" onclick="handleNavbarLoginClick()" style="font-weight:700; color:var(--text-heading); font-size:1rem; cursor:pointer;">Login</button>
+                    </div>
+                    <div id="nav-user-profile" style="display:none; align-items:center; gap:12px;">
+                        <div class="user-pill-badge" onclick="launchApp('dashboard')" style="cursor:pointer;" title="Go to Dashboard">
+                            <span class="user-avatar-mini" id="header-user-avatar">👤</span>
+                            <span class="user-name-label" id="header-user-name">Rahim Ahmed</span>
+                            <span class="user-role-label" id="header-user-role">Patient</span>
+                        </div>
+                        <button class="btn-logout-small" onclick="handleUserLogout()">Logout</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Landing Content -->
+        <main>
+            <!-- 1. Hero Section (Screenshot 1) -->
+            <section id="hero" class="hero-section max-width-container">
+                <div class="hero-grid">
+                    <!-- Left Hero Copy -->
+                    <div class="hero-left">
+                        <div class="ai-badge">
+                            <svg class="badge-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                <path d="m9 12 2 2 4-4"/>
+                            </svg>
+                            <span>AI-Powered Healthcare Assistant</span>
+                        </div>
+
+                        <h1 class="hero-headline">
+                            Better Health,<br>
+                            Brighter <span class="hero-highlight">Future.</span>
+                        </h1>
+
+                        <p class="hero-subtext">
+                            MediLink is your smart assistant for prescriptions, medication management, and pharmacist consultations. Experience seamless healthcare coordination with bank-level security and intelligent insights.
+                        </p>
+
+                        <div class="hero-cta-group">
+                            <button class="btn-hero-primary" onclick="handleGetStartedClick()">
+                                <span>Get Started</span>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                            <a href="#features" class="btn-hero-secondary">Explore Features</a>
+                        </div>
+
+                        <div class="trust-checks">
+                            <div class="check-item">
+                                <svg class="check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                                <span>Trusted Quality Standards</span>
+                            </div>
+                            <div class="check-item">
+                                <svg class="check-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                                <span>Patient Care Focused</span>
+                            </div>
+                        </div>
+
+                        <!-- Demo Picture Quick Medicine Search Bar -->
+                        <div class="hero-search-bar-card">
+                            <div class="search-field-group">
+                                <label>Search Medicine</label>
+                                <div class="search-input-box">
+                                    <span>🔍</span>
+                                    <input type="text" placeholder="Search by medicine name..." id="hero-quick-search-input" onkeydown="if(event.key==='Enter') launchApp('dashboard')">
+                                </div>
+                            </div>
+                            <div class="search-divider"></div>
+                            <div class="search-field-group">
+                                <label>Category</label>
+                                <div class="search-input-box">
+                                    <select id="hero-category-select">
+                                        <option value="">All Categories</option>
+                                        <option value="tablets">Tablets</option>
+                                        <option value="capsules">Capsules</option>
+                                        <option value="injectables">Injectables</option>
+                                        <option value="syrups">Dry Syrups</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="search-divider"></div>
+                            <div class="search-field-group">
+                                <label>Find Nearby</label>
+                                <div class="search-input-box">
+                                    <span>📍</span>
+                                    <input type="text" placeholder="Enter location (e.g. Banani)" id="hero-location-input">
+                                </div>
+                            </div>
+                            <button type="button" class="btn-hero-find" onclick="launchApp('dashboard')">Find Now</button>
+                        </div>
+                    </div>
+
+                    <!-- Right Hero Mockup Frame (Screenshot 1 Right) -->
+                    <div class="hero-right">
+                        <div class="mockup-frame">
+                            <div class="monitor-screen">
+                                <div class="mock-topbar">
+                                    <div class="mock-logo">
+                                        <div class="mock-shield"></div>
+                                        <span>MediLink</span>
+                                    </div>
+                                    <span class="mock-title">Patient dashboard</span>
+                                    <div class="mock-user">
+                                        <span class="mock-dot"></span>
+                                        <div class="mock-avatar"></div>
+                                    </div>
+                                </div>
+
+                                <div class="mock-body">
+                                    <div class="mock-sidebar">
+                                        <div class="mock-nav-item active">Dashboard</div>
+                                        <div class="mock-nav-item">Profile</div>
+                                        <div class="mock-nav-item">Notifications</div>
+                                        <div class="mock-nav-item">Messages</div>
+                                        <div class="mock-nav-item">Events</div>
+                                        <div class="mock-nav-item mock-settings">Settings</div>
+                                    </div>
+
+                                    <div class="mock-canvas">
+                                        <div class="mock-row">
+                                            <div class="mock-card card-records">
+                                                <div class="mock-card-header">
+                                                    <strong>Medical Records</strong>
+                                                    <small>Timeline view of patient records</small>
+                                                </div>
+                                                <div class="mock-timeline">
+                                                    <div class="timeline-item"><div class="doc-icon">📄</div><span>Jan<br>2020</span></div>
+                                                    <div class="timeline-line"></div>
+                                                    <div class="timeline-item"><div class="doc-icon">📄</div><span>Jan<br>2021</span></div>
+                                                    <div class="timeline-line"></div>
+                                                    <div class="timeline-item"><div class="doc-icon">📄</div><span>Jan<br>2022</span></div>
+                                                    <div class="timeline-line"></div>
+                                                    <div class="timeline-item"><div class="doc-icon">📄</div><span>Jan<br>2023</span></div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mock-card card-reminders">
+                                                <div class="mock-card-header">
+                                                    <strong>Medication Reminders</strong>
+                                                    <small>Schedule to memory schedule</small>
+                                                </div>
+                                                <div class="reminder-pills">
+                                                    <div class="rem-pill"><span class="clock">🕒 09:00 AM</span><span class="pill-dot">💊</span></div>
+                                                    <div class="rem-pill"><span class="clock">🕒 10:30 PM</span><span class="pill-dot">💊</span></div>
+                                                    <div class="rem-pill"><span class="clock">🕒 09:30 PM</span><span class="pill-dot">💊</span></div>
+                                                    <div class="rem-pill"><span class="clock">🕒 12:00 PM</span><span class="pill-dot">💊</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="mock-row">
+                                            <div class="mock-card card-vitals">
+                                                <div class="mock-card-header">
+                                                    <strong>Health Vitals</strong>
+                                                    <span class="badge-vital">Health Vitals ▾</span>
+                                                </div>
+                                                <div class="vitals-chart">
+                                                    <svg viewBox="0 0 280 90" preserveAspectRatio="none" class="chart-svg">
+                                                        <defs>
+                                                            <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                                                                <stop offset="0%" stop-color="#1d4ed8" stop-opacity="0.25"/>
+                                                                <stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.0"/>
+                                                            </linearGradient>
+                                                        </defs>
+                                                        <path d="M0,60 C40,75 70,30 110,45 C150,60 180,20 220,35 C250,45 270,15 280,25 L280,90 L0,90 Z" fill="url(#chartGrad)"/>
+                                                        <path d="M0,60 C40,75 70,30 110,45 C150,60 180,20 220,35 C250,45 270,15 280,25" fill="none" stroke="#1d4ed8" stroke-width="2.5"/>
+                                                    </svg>
+                                                    <div class="chart-labels">
+                                                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="mock-card card-ai-bubble">
+                                                <div class="ai-box">
+                                                    <div class="ai-bot-avatar">🤖</div>
+                                                    <div>
+                                                        <strong>AI Health Assistant</strong>
+                                                        <p>Prescription sync complete. Next dose in 45 mins.</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="monitor-stand"></div>
+                            <div class="monitor-base"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. Stats Bar (Mediva Style Gradient Card) with Dynamic Animated Counts -->
+            <section class="stats-section max-width-container">
+                <div class="stats-card-wrapper">
+                    <p class="stats-header-tag">WHY CHOOSE MEDILINK • TRUSTED BY HEALTHCARE PROFESSIONALS</p>
+                    <div class="stats-grid">
+                        <div class="stat-col">
+                            <h3 class="stat-number" id="stat-active-users">10,000+</h3>
+                            <p class="stat-label">Active Users</p>
+                        </div>
+                        <div class="stat-col">
+                            <h3 class="stat-number" id="stat-certified-pharmacists">560+</h3>
+                            <p class="stat-label">Certified Pharmacists</p>
+                        </div>
+                        <div class="stat-col">
+                            <h3 class="stat-number" id="stat-reminders-sent">1.0M+</h3>
+                            <p class="stat-label">Reminders Sent</p>
+                        </div>
+                        <div class="stat-col stat-security">
+                            <div class="security-icon-box">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                    <rect x="9" y="11" width="6" height="5" rx="1"/>
+                                    <path d="M10 11V9a2 2 0 1 1 4 0v2"/>
+                                </svg>
+                            </div>
+                            <p class="stat-label">Enterprise Security</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 3. Problem Statement (Screenshot 2) -->
+            <section class="problem-section max-width-container">
+                <div class="problem-content">
+                    <div class="warning-icon-wrapper">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                        </svg>
+                    </div>
+                    <h2 class="problem-title">Healthcare information is difficult to manage.</h2>
+                    <p class="problem-text">
+                        Disconnected systems, scattered records, and forgotten medications lead to poor health outcomes. Patients struggle to keep track, and pharmacists lack verified access to prescription history. It shouldn't be this hard.
+                    </p>
+                </div>
+            </section>
+
+            <!-- 4. Features Grid (Screenshot 2 & Screenshot 3) -->
+            <section id="features" class="features-section max-width-container">
+                <div class="section-title-box">
+                    <h2 class="section-heading">Intelligent Features for Better Care</h2>
+                    <p class="section-subheading">Everything you need to manage your health seamlessly in one secure platform.</p>
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"/>
+                                <path d="m21 21-4.35-4.35"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Consult Pharmacists</h3>
+                        <p class="feature-description">
+                            Connect directly with licensed pharmacists for instant medicine advice, dosage validation, and stock inquiries.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Appointment Booking</h3>
+                        <p class="feature-description">
+                            Schedule in-person visits or teleconsultations instantly. Avoid waiting rooms with smart queue management.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Medical Records</h3>
+                        <p class="feature-description">
+                            Access your complete medical history, lab results, and prescriptions in one centralized, secure vault.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Notifications & Reminders</h3>
+                        <p class="feature-description">
+                            Never miss a dose. Get intelligent, contextual reminders for medications, refills, and upcoming appointments.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Direct Pharmacist Tele-Consult</h3>
+                        <p class="feature-description">
+                            Connect with verified pharmacists via direct phone call or real-time encrypted messaging integrated with your prescription records.
+                        </p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-icon-wrapper">
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Secure Management</h3>
+                        <p class="feature-description">
+                            Enterprise-grade encryption ensures your health data remains private, compliant, and under your absolute control.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 5. How MediLink Works (Screenshot 4) -->
+            <section id="how-it-works" class="how-it-works-section max-width-container">
+                <div class="section-title-box">
+                    <h2 class="section-heading">How MediLink Works</h2>
+                </div>
+
+                <div class="workflow-steps-row">
+                    <div class="workflow-step" onclick="handleCreateAccountClick()" onkeydown="if(event.key==='Enter'||event.key===' ') handleCreateAccountClick()" role="button" tabindex="0" title="Click to Create Account">
+                        <div class="step-circle">01</div>
+                        <h4 class="step-title">Create Account</h4>
+                        <p class="step-desc">Set up your secure profile in minutes.</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-circle">02</div>
+                        <h4 class="step-title">Find Service</h4>
+                        <p class="step-desc">Search for specialists or services needed.</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-circle">03</div>
+                        <h4 class="step-title">Book Appointment</h4>
+                        <p class="step-desc">Schedule at your convenience instantly.</p>
+                    </div>
+                    <div class="workflow-step">
+                        <div class="step-circle">04</div>
+                        <h4 class="step-title">Manage Healthcare</h4>
+                        <p class="step-desc">Track records and get smart reminders.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 6. For Patients Section (Screenshot 4) -->
+            <section id="for-patients" class="audience-section max-width-container">
+                <div class="audience-grid">
+                    <div class="audience-widgets">
+                        <div class="widget-card widget-routine">
+                            <div class="routine-left">
+                                <div class="link-icon">🔗</div>
+                                <div>
+                                    <strong>Morning Routine</strong>
+                                    <p>Lisinopril 10mg</p>
+                                </div>
+                            </div>
+                            <span class="badge-taken">Taken 8:00 AM</span>
+                        </div>
+
+                        <div class="widget-row">
+                            <div class="widget-card widget-bp">
+                                <div class="bp-icon">📈</div>
+                                <h3 class="bp-value">120/80</h3>
+                                <p class="bp-label">Last BP Reading</p>
+                            </div>
+                            <div class="widget-card widget-doctor-card">
+                                <div class="doc-cal-icon">💊</div>
+                                <h3 class="doc-name">Lazz Pharma</h3>
+                                <p class="doc-time">Rx Ready for Pickup</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="audience-copy">
+                        <span class="audience-tag">FOR PATIENTS</span>
+                        <h2 class="audience-heading">Empowering Your Health Journey</h2>
+                        <p class="audience-desc">
+                            Take control of your health data. MediLink organizes your medical history, synchronizes with your wearables, and proactively manages your medication schedule so you can focus on living well.
+                        </p>
+
+                        <div class="audience-checklist">
+                            <div class="check-row">
+                                <svg class="check-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                                <span>Unified health dashboard</span>
+                            </div>
+                            <div class="check-row">
+                                <svg class="check-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                                <span>Smart medication alerts</span>
+                            </div>
+                            <div class="check-row">
+                                <svg class="check-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="m9 12 2 2 4-4"/>
+                                </svg>
+                                <span>Emergency contacts & caregiver management</span>
+                            </div>
+                        </div>
+
+                        <a href="#features" class="audience-link" onclick="launchApp('patient')">
+                            <span>See patient features</span>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 7. For Pharmacists Section with Dynamic Metrics -->
+            <section id="for-pharmacists" class="audience-section professionals-section max-width-container">
+                <div class="audience-grid">
+                    <div class="audience-copy">
+                        <span class="audience-tag tag-pro">FOR PHARMACISTS</span>
+                        <h2 class="audience-heading">Streamline Dispensing & Pharmacy Inventory</h2>
+                        <p class="audience-desc">
+                            Reduce administrative burden and accelerate medicine dispensing. MediLink verifies prescriptions digitally, tracks real-time inventory, and connects patients directly with licensed pharmacists.
+                        </p>
+
+                        <div class="metrics-row">
+                            <div class="metric-item">
+                                <h3 class="metric-number" id="metric-doc-time">-30%</h3>
+                                <p class="metric-label">Time spent on dispensing</p>
+                            </div>
+                            <div class="metric-item">
+                                <h3 class="metric-number" id="metric-engagement">+40%</h3>
+                                <p class="metric-label">Prescription fulfillment rate</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="audience-widgets">
+                        <div class="schedule-widget-card">
+                            <div class="schedule-header">
+                                <h3>Today's Dispensing Queue</h3>
+                                <span class="badge-count">8 Orders</span>
+                            </div>
+
+                            <div class="schedule-list">
+                                <div class="schedule-row">
+                                    <div class="patient-info">
+                                        <div class="patient-avatar avatar-sj">SJ</div>
+                                        <div>
+                                            <strong>Sarah Jenkins</strong>
+                                            <p>Refill Verified • 09:00 AM</p>
+                                        </div>
+                                    </div>
+                                    <div class="status-done">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5">
+                                            <circle cx="12" cy="12" r="10"/>
+                                            <path d="m9 12 2 2 4-4"/>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <div class="schedule-row row-active">
+                                    <div class="patient-info">
+                                        <div class="patient-avatar avatar-mr">MR</div>
+                                        <div>
+                                            <strong>Michael Ross</strong>
+                                            <p>Prescription Check • 10:30 AM <span class="text-waiting">(Waiting)</span></p>
+                                        </div>
+                                    </div>
+                                    <button class="btn-join" onclick="launchApp('chat')">Review</button>
+                                </div>
+
+                                <div class="schedule-row">
+                                    <div class="patient-info">
+                                        <div class="patient-avatar avatar-al">AL</div>
+                                        <div>
+                                            <strong>Amanda Lee</strong>
+                                            <p>Lab Review • 11:45 AM</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 8. Bottom CTA Banner -->
+            <section id="about" class="cta-banner-section max-width-container">
+                <div class="cta-banner-card">
+                    <h2>Ready to Experience Next-Gen Healthcare?</h2>
+                    <p>Connect prescriptions, find verified medicines, consult pharmacists, and access 24/7 emergency care with MediLink.</p>
+                    <div class="cta-banner-actions">
+                        <button class="btn-cta-white" onclick="handleGetStartedClick()">Launch Live Platform</button>
+                        <button class="btn-cta-outline" onclick="launchApp('emergency')">🚨 Emergency 24/7 Finder</button>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <div class="max-width-container footer-content">
+                <div class="footer-brand">
+                    <div class="brand-logo">
+                        <div class="logo-shield">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm1 14h-2v-4H7V10h4V6h2v4h4v2h-4v4z"/>
+                            </svg>
+                        </div>
+                        <span class="logo-text">MediLink</span>
+                    </div>
+                    <p class="footer-desc">Smart Emergency Medicine & Health Assistant.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#features">Features</a>
+                    <a href="#how-it-works">How It Works</a>
+                    <a href="#for-patients">For Patients</a>
+                    <a href="#for-pharmacists">For Pharmacists</a>
+                    <a href="#" onclick="launchApp('dashboard')">Live Demo</a>
+                </div>
+            </div>
+            <div class="footer-bottom max-width-container">
+                <p>&copy; 2026 MediLink. All rights reserved. HIPAA Compliant & DGDA Verified.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Sliding Dual-Panel Login & Signup Modal (Matching Demo Video) -->
+    <div id="modal-auth" class="modal-overlay auth-modal-backdrop" onclick="if(event.target===this) closeModal('modal-auth')">
+        <div class="auth-container" id="auth-container">
+            <button class="auth-close-btn" onclick="closeModal('modal-auth')">&times;</button>
+
+            <!-- 1. Sign In Form Panel -->
+            <div class="auth-form-panel form-signin">
+                <div class="auth-form-header">
+                    <div class="auth-logo-badge">
+                        <div class="auth-logo-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm1 14h-2v-4H7V10h4V6h2v4h4v2h-4v4z"/>
+                            </svg>
+                        </div>
+                        <span>MediLink</span>
+                    </div>
+                    <h2>Sign In</h2>
+                </div>
+
+                <!-- Dynamic Auth Alert Banner (For "Email not exist! Sign up First") -->
+                <div id="signin-alert-box" class="auth-alert-box" style="display:none;"></div>
+
+                <!-- Role Selector (Patient, Pharmacist, Admin) -->
+                <div class="auth-role-tabs">
+                    <button type="button" class="role-tab active" id="signin-tab-patient" onclick="selectAuthRole('PATIENT', 'signin')">👤 Patient</button>
+                    <button type="button" class="role-tab" id="signin-tab-pharmacist" onclick="selectAuthRole('PHARMACIST', 'signin')">🩺 Pharmacist</button>
+                    <button type="button" class="role-tab" id="signin-tab-admin" onclick="selectAuthRole('ADMIN', 'signin')">🛡️ Admin</button>
+                </div>
+
+                <form onsubmit="handleAuthSubmit(event, 'signin')">
+                    <input type="hidden" id="signin-role" value="PATIENT">
+                    
+                    <div class="auth-input-group">
+                        <label>Login or email *</label>
+                        <div class="auth-input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="email" id="signin-email" placeholder="name@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <div class="label-with-link">
+                            <label>Password * (must contain at least 8 symbols)</label>
+                            <a href="#" class="forgot-link" onclick="showToast('Password reset link sent to your registered email.')">Forgot password?</a>
+                        </div>
+                        <div class="auth-input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="signin-password" placeholder="••••••••••••" required minlength="8">
+                            <span class="toggle-password-icon" onclick="togglePasswordVisibility('signin-password')">👁️</span>
+                        </div>
+                    </div>
+
+
+                    <!-- Verification Badge -->
+                    <div class="captcha-verify-box" id="signin-captcha" onclick="toggleCaptchaVerified('signin')">
+                        <div class="captcha-checkbox">
+                            <span class="captcha-check-icon">✓</span>
+                        </div>
+                        <span class="captcha-text">Click to verify secure session</span>
+                        <div class="captcha-logo">🛡️</div>
+                    </div>
+
+                    <small class="terms-text">By clicking "Sign In" button, you agree to our <a href="#">Terms of use</a></small>
+
+                    <button type="submit" class="btn-auth-submit" id="btn-signin-submit">Sign In</button>
+
+                    <div class="auth-switch-prompt">
+                        <span>Don't have an account?</span>
+                        <a href="javascript:void(0)" onclick="setAuthMode('signup')" class="switch-mode-link">Create Account / Sign Up ➔</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 2. Sign Up Form Panel -->
+            <div class="auth-form-panel form-signup">
+                <div class="auth-form-header">
+                    <div class="auth-logo-badge">
+                        <div class="auth-logo-icon">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm1 14h-2v-4H7V10h4V6h2v4h4v2h-4v4z"/>
+                            </svg>
+                        </div>
+                        <span>MediLink</span>
+                    </div>
+                    <h2>Sign Up</h2>
+                </div>
+
+                <!-- Role Selector (Patient, Pharmacist, Admin) -->
+                <div class="auth-role-tabs">
+                    <button type="button" class="role-tab active" id="signup-tab-patient" onclick="selectAuthRole('PATIENT', 'signup')">👤 Patient</button>
+                    <button type="button" class="role-tab" id="signup-tab-pharmacist" onclick="selectAuthRole('PHARMACIST', 'signup')">🩺 Pharmacist</button>
+                    <button type="button" class="role-tab" id="signup-tab-admin" onclick="selectAuthRole('ADMIN', 'signup')">🛡️ Admin</button>
+                </div>
+
+                <!-- Signup Form -->
+                <form id="signup-form" onsubmit="handleAuthSubmit(event, 'signup')">
+                    <input type="hidden" id="signup-role" value="PATIENT">
+
+                    <div class="auth-input-group">
+                        <label>Full name *</label>
+                        <div class="auth-input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input type="text" id="signup-name" placeholder="e.g. Rahim Ahmed" required>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label>Email *</label>
+                        <div class="auth-input-wrapper">
+                            <span class="input-icon">✉️</span>
+                            <input type="email" id="signup-email" placeholder="name@example.com" required>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Role Specific Field -->
+                    <div class="auth-input-group" id="signup-role-field-group">
+                        <label id="signup-role-field-label">Emergency Phone / Contact *</label>
+                        
+                        <!-- Phone input with country code selector (PATIENT) -->
+                        <div class="auth-input-wrapper phone-input-wrapper" id="signup-phone-wrapper">
+                            <span class="phone-icon-static">📞</span>
+                            <div class="custom-country-picker" id="custom-country-picker">
+                                <button type="button" class="country-picker-btn" id="country-picker-btn" onclick="toggleCountryDropdown(event)" title="Choose Country">
+                                    <img id="selected-country-flag" class="country-flag-img" src="/flags/bd.png" alt="Bangladesh">
+                                    <span id="selected-country-code" class="country-code-text">+880</span>
+                                    <svg class="country-arrow" width="10" height="6" viewBox="0 0 10 6" fill="none">
+                                        <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </button>
+
+                                <input type="hidden" id="signup-country-code" value="+880">
+
+                                <!-- Custom Dropdown Menu with Flags -->
+                                <div class="country-picker-dropdown" id="country-picker-dropdown" style="display: none;">
+                                    <div class="country-search-box">
+                                        <span class="search-icon">🔍</span>
+                                        <input type="text" id="country-search-input" placeholder="Search country or code..." oninput="filterCountries(this.value)">
+                                    </div>
+                                    <div class="country-list-items" id="country-list-items">
+                                        <!-- Dynamically populated with real flag images -->
+                                    </div>
+                                </div>
+                            </div>
+                            <span class="phone-divider"></span>
+                            <input type="tel" id="signup-phone" class="phone-number-field" placeholder="1711002233" oninput="syncSignupExtra()" required>
+                        </div>
+
+                        <!-- General text field (PHARMACIST / ADMIN) -->
+                        <div class="auth-input-wrapper" id="signup-text-wrapper" style="display: none;">
+                            <span class="input-icon" id="signup-text-icon">🩺</span>
+                            <input type="text" id="signup-extra-text" placeholder="e.g. Lazz Pharma (Dhanmondi) | DGDA-PH-99201" oninput="syncSignupExtra()">
+                        </div>
+
+                        <input type="hidden" id="signup-extra" value="">
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label>Password *</label>
+                        <div class="auth-input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input type="password" id="signup-password" placeholder="••••••••••••" oninput="handlePasswordInput()" required minlength="8">
+                            <span class="toggle-password-icon" onclick="togglePasswordVisibility('signup-password')">👁️</span>
+                        </div>
+
+                        <!-- Strong Password Instructions & Requirements -->
+                        <div class="pwd-instruction-card" id="pwd-instruction-card">
+                            <div class="pwd-strength-header">
+                                <span class="pwd-strength-label">Password Strength:</span>
+                                <span class="pwd-strength-badge" id="pwd-strength-badge">Too Short</span>
+                            </div>
+                            <div class="pwd-meter-track">
+                                <div class="pwd-meter-bar" id="pwd-meter-bar"></div>
+                            </div>
+                            <div class="pwd-rules-grid">
+                                <div class="pwd-rule-item" id="rule-length">
+                                    <span class="rule-icon">○</span> At least 8 characters
+                                </div>
+                                <div class="pwd-rule-item" id="rule-upper">
+                                    <span class="rule-icon">○</span> Uppercase letter (A-Z)
+                                </div>
+                                <div class="pwd-rule-item" id="rule-lower">
+                                    <span class="rule-icon">○</span> Lowercase letter (a-z)
+                                </div>
+                                <div class="pwd-rule-item" id="rule-number">
+                                    <span class="rule-icon">○</span> At least one number (0-9)
+                                </div>
+                                <div class="pwd-rule-item" id="rule-special">
+                                    <span class="rule-icon">○</span> Special symbol (!@#$%^&*)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="auth-input-group">
+                        <label>Confirm Password *</label>
+                        <div class="auth-input-wrapper" id="signup-confirm-wrapper">
+                            <span class="input-icon">🔐</span>
+                            <input type="password" id="signup-confirm-password" placeholder="••••••••••••" oninput="validatePasswordMatch()" required minlength="8">
+                            <span class="toggle-password-icon" onclick="togglePasswordVisibility('signup-confirm-password')">👁️</span>
+                        </div>
+                    </div>
+
+                    <div class="captcha-verify-box" id="signup-captcha" onclick="toggleCaptchaVerified('signup')">
+                        <div class="captcha-checkbox">
+                            <span class="captcha-check-icon">✓</span>
+                        </div>
+                        <span class="captcha-text">Click to verify secure session</span>
+                        <div class="captcha-logo">🛡️</div>
+                    </div>
+
+                    <small class="terms-text">By clicking "Sign Up" button, you agree to our <a href="#">Terms of use</a></small>
+
+                    <button type="submit" class="btn-auth-submit" id="btn-signup-submit">Sign Up</button>
+
+                    <div class="auth-switch-prompt">
+                        <span>Already registered?</span>
+                        <a href="javascript:void(0)" onclick="setAuthMode('signin')" class="switch-mode-link highlight-link">👉 Go to Sign In (Login)</a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- 3. Sliding Overlay Hero Illustration Panel (Video Match) -->
+            <div class="auth-overlay-container">
+                <div class="auth-overlay-panel overlay-left">
+                    <div class="overlay-logo-emblem">
+                        <div class="emblem-tri-node">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="m8 12 3 3 5-5"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h2>Hello! Welcome to the MediLink platform</h2>
+                    <p>If you already have an account, sign in now to access your dashboard.</p>
+                    <button type="button" class="btn-overlay-ghost" onclick="setAuthMode('signin')">Sign In</button>
+
+                    <div class="overlay-illustration">
+                        <div class="illus-monitor">
+                            <div class="illus-top">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="illus-screen-bars">
+                                <div class="bar-line"></div>
+                                <div class="bar-line short"></div>
+                                <div class="bar-line mid"></div>
+                            </div>
+                            <div class="illus-doctor">🩺</div>
+                        </div>
+                        <div class="floating-pill-shield">🛡️ Verified Healthcare Network</div>
+                    </div>
+                </div>
+
+                <div class="auth-overlay-panel overlay-right">
+                    <div class="overlay-logo-emblem">
+                        <div class="emblem-tri-node">
+                            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3z"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <h2>Hello! Welcome to the MediLink platform</h2>
+                    <p>Don't have an account yet? Register now to experience smart healthcare.</p>
+                    <button type="button" class="btn-overlay-ghost" onclick="setAuthMode('signup')">Sign Up</button>
+
+                    <div class="overlay-illustration">
+                        <div class="illus-monitor">
+                            <div class="illus-top">
+                                <span></span><span></span><span></span>
+                            </div>
+                            <div class="illus-screen-bars">
+                                <div class="bar-line"></div>
+                                <div class="bar-line short"></div>
+                                <div class="bar-line mid"></div>
+                            </div>
+                            <div class="illus-doctor">💊</div>
+                        </div>
+                        <div class="floating-pill-shield">🔒 HIPAA & DGDA Compliant</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

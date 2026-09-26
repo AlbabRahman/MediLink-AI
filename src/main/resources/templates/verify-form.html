@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Verify Pack')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Fake medicine detection</span>
+        <h1>Is that pack genuine?</h1>
+        <p class="muted">Type or scan the QR/barcode printed on the medicine pack.
+            We check the manufacturer, batch number, and expiry date against the
+            official reference database.</p>
+    </div>
+
+    <div class="card card-accent" style="margin-top:20px;max-width:560px;">
+        <form method="post" action="/verify">
+            <label>QR / barcode code</label>
+            <input type="text" name="code" placeholder="e.g. QR-NAPA-2026-A1" required>
+            <button type="submit">Check pack</button>
+        </form>
+        <hr class="rule">
+        <p class="muted small" style="margin-bottom:0;">
+            <strong>Demo codes:</strong><br>
+            <code>QR-NAPA-2026-A1</code> — genuine<br>
+            <code>QR-NAPA-2023-OLD</code> — expired<br>
+            anything else — possibly fake
+        </p>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>

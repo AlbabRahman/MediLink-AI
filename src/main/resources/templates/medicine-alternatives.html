@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: head('Alternatives')}"></head>
+<body>
+<header th:replace="~{layout :: header}"></header>
+<main>
+    <div class="hero" style="padding-bottom:0;">
+        <span class="kicker">Same medicine, every brand</span>
+        <h1 th:text="${medicine.brandName} + ' ' + ${medicine.strength}"></h1>
+        <p>Generic: <span class="badge" th:text="${medicine.generic.name}"></span>
+            — <span th:text="${medicine.generic.treats}"></span></p>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+        <h2>All brands with this generic (cheapest first)</h2>
+        <p class="muted small">Every brand below contains the same active ingredient.
+            Ask your pharmacist or doctor before switching brands.</p>
+        <table>
+            <tr><th>Brand</th><th>Strength</th><th>Company</th><th>Price</th><th></th></tr>
+            <tr th:each="a, stat : ${alternatives}">
+                <td><strong th:text="${a.brandName}"></strong></td>
+                <td th:text="${a.strength}"></td>
+                <td th:text="${a.company}"></td>
+                <td>
+                    <strong th:text="'৳' + ${a.priceBdt}"></strong>
+                    <span class="badge badge-gold" th:if="${stat.first}">cheapest</span>
+                </td>
+                <td><a class="btn btn-sm" th:href="@{'/stock/live?q=' + ${a.brandName}}">Who has it?</a></td>
+            </tr>
+        </table>
+    </div>
+</main>
+<footer th:replace="~{layout :: footer}"></footer>
+</body>
+</html>
