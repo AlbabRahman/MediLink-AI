@@ -38,35 +38,14 @@ public class DataSeeder implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        // ---------- Portal demo accounts (the "Load demo credentials" buttons) ----------
-        // Idempotent: added even when the main demo data is already seeded.
-        if (userRepo.findByEmail("rahim@medilink.com").isEmpty()) {
-            User demoPharma = userRepo.save(new User("Dr. Farhan Kabir", "farhan@lazzpharma.com",
-                    "pharma123", UserRole.PHARMACIST, "01711000012"));
-            userRepo.save(new User("Rahim Ahmed", "rahim@medilink.com", "patient123", UserRole.PATIENT, "01711000011"));
-            userRepo.save(new User("System Administrator", "admin@medilink.com", "admin123", UserRole.ADMIN, "01711000013"));
-            pharmacyRepo.save(new Pharmacy("Lazz Pharma Express", "Banani",
-                    "Lazz Pharma (Banani) | DGDA-PH-99201", 23.7937, 90.4066, "02222271009", true, demoPharma));
-        }
-
-        // ---------- Demo medicine batches (fake-medicine detection) ----------
-        // Idempotent: guaranteed to exist even on databases seeded by older
-        // versions with different batch codes.
-        if (batchRepo.findByQrCodeIgnoreCase("QR-NAPA-2026-A1").isEmpty()) {
-            Medicine napaDemo = findMed(medicineRepo, "Napa");
-            Medicine lantusDemo = findMed(medicineRepo, "Lantus SoloStar");
-            if (napaDemo != null && lantusDemo != null) {
-                batchRepo.save(new MedicineBatch("QR-NAPA-2026-A1", "BN-8841", "Beximco Pharmaceuticals Ltd.",
-                        LocalDate.of(2026, 1, 15), LocalDate.of(2028, 1, 14), napaDemo));
-                batchRepo.save(new MedicineBatch("QR-LANTUS-2025-B7", "SN-2210", "Sanofi Bangladesh Ltd.",
-                        LocalDate.of(2025, 6, 1), LocalDate.of(2027, 5, 31), lantusDemo));
-                batchRepo.save(new MedicineBatch("QR-NAPA-2023-OLD", "BN-1200", "Beximco Pharmaceuticals Ltd.",
-                        LocalDate.of(2023, 2, 1), LocalDate.of(2025, 2, 1), napaDemo)); // expired demo
-            }
-        }
-
-        if (userRepo.count() > 0) {
-            return; // already seeded
+        // ---------- Already-seeded database: top up newer demo data only ----------
+        // NOTE: must key off medicines, not users — the portal demo accounts
+        // below create users, which would otherwise short-circuit the main
+        // seed on a fresh database.
+        if (medicineRepo.count() > 0) {
+            ensurePortalDemoAccounts();
+            ensureDemoBatches();
+            return;
         }
 
         // ---------- Demo users ----------
@@ -219,12 +198,48 @@ public class DataSeeder implements CommandLineRunner {
                 LocalDate.of(2025, 6, 1), LocalDate.of(2027, 5, 31), lantus));
         batchRepo.save(new MedicineBatch("QR-NAPA-2023-OLD", "BN-1200", "Beximco Pharmaceuticals Ltd.",
                 LocalDate.of(2023, 2, 1), LocalDate.of(2025, 2, 1), napa)); // expired demo
+
+        // portal demo accounts (the "Load demo credentials" buttons)
+        ensurePortalDemoAccounts();
+    }
+
+    /** Portal demo accounts — idempotent, safe on any database state. */
+    private void ensurePortalDemoAccounts() {
+        if (userRepo.findByEmail("rahim@medilink.com").isEmpty()) {
+            User demoPharma = userRepo.save(new User("Dr. Farhan Kabir", "farhan@lazzpharma.com",
+                    "pharma123", UserRole.PHARMACIST, "01711000012"));
+            userRepo.save(new User("Rahim Ahmed", "rahim@medilink.com", "patient123", UserRole.PATIENT, "01711000011"));
+            userRepo.save(new User("System Administrator", "admin@medilink.com", "admin123", UserRole.ADMIN, "01711000013"));
+            pharmacyRepo.save(new Pharmacy("Lazz Pharma Express", "Banani",
+                    "Lazz Pharma (Banani) | DGDA-PH-99201", 23.7937, 90.4066, "02222271009", true, demoPharma));
+        }
+    }
+
+    /** Demo batch codes for fake-medicine detection — idempotent. */
+    private void ensureDemoBatches() {
+        if (batchRepo.findByQrCodeIgnoreCase("QR-NAPA-2026-A1").isNotEmpty()) {
+            return;
+        }
+        Medicine napaDemo = findMedOrNull(medicineRepo, "Napa");
+        Medicine lantusDemo = findMedOrNull(medicineRepo, "Lantus SoloStar");
+        if (napaDemo != null && lantusDemo != null) {
+            batchRepo.save(new MedicineBatch("QR-NAPA-2026-A1", "BN-8841", "Beximco Pharmaceuticals Ltd.",
+                    LocalDate.of(2026, 1, 15), LocalDate.of(2028, 1, 14), napaDemo));
+            batchRepo.save(new MedicineBatch("QR-LANTUS-2025-B7", "SN-2210", "Sanofi Bangladesh Ltd.",
+                    LocalDate.of(2025, 6, 1), LocalDate.of(2027, 5, 31), lantusDemo));
+            batchRepo.save(new MedicineBatch("QR-NAPA-2023-OLD", "BN-1200", "Beximco Pharmaceuticals Ltd.",
+                    LocalDate.of(2023, 2, 1), LocalDate.of(2025, 2, 1), napaDemo)); // expired demo
+        }
     }
 
     private static Medicine findMed(MedicineRepository repo, String brandName) {
+        return findMedOrNull(repo, brandName);
+    }
+
+    private static Medicine findMedOrNull(MedicineRepository repo, String brandName) {
         return repo.findAll().stream()
                 .filter(m -> m.getBrandName().equals(brandName))
-                .findFirst().orElseThrow();
+                .findFirst().orElse(null);
     }
 
     private void setStock(MedicineRepository medicineRepo, Pharmacy p, String brandName, int qty) {
