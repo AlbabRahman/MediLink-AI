@@ -217,7 +217,7 @@ public class DataSeeder implements CommandLineRunner {
 
     /** Demo batch codes for fake-medicine detection — idempotent. */
     private void ensureDemoBatches() {
-        if (batchRepo.findByQrCodeIgnoreCase("QR-NAPA-2026-A1").isNotEmpty()) {
+        if (batchRepo.findByQrCodeIgnoreCase("QR-NAPA-2026-A1").isPresent()) {
             return;
         }
         Medicine napaDemo = findMedOrNull(medicineRepo, "Napa");
