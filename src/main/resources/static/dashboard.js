@@ -518,6 +518,8 @@ async function saveProfile() {
 }
 
 // ---------- Live events (SSE) ----------
+let chatPollTimer = null;
+
 function connectEvents() {
     try {
         const es = new EventSource('/api/events/stream');
@@ -533,6 +535,14 @@ function connectEvents() {
             }
         };
     } catch (e) { /* live events are optional */ }
+
+    // Polling fallback: keeps the chat thread synced even if the SSE stream
+    // is dropped (proxy, sleep, reconnect). Only fetches while the tab is open.
+    if (!chatPollTimer) {
+        chatPollTimer = setInterval(() => {
+            if (document.getElementById('sec-chat').classList.contains('active')) loadChat();
+        }, 3000);
+    }
 }
 
 // ---------- Boot ----------

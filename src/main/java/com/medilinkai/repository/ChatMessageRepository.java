@@ -12,4 +12,7 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessage, Long> 
     @Query("select m from ChatMessage m where (m.sender.id = :a and m.receiver.id = :b) " +
            "or (m.sender.id = :b and m.receiver.id = :a) order by m.sentAt")
     List<ChatMessage> findConversation(@Param("a") Long userA, @Param("b") Long userB);
+
+    /** Every message, oldest first — the shared consultation room. */
+    List<ChatMessage> findAllByOrderBySentAtAsc();
 }

@@ -14,8 +14,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Live consultation chat for the portal. The portal keeps one conversation
- * between the signed-in user and the first pharmacist/patient counterpart.
+ * Live consultation chat for the portal. One shared consultation room:
+ * every signed-in patient/pharmacist sees the same thread, so any
+ * patient-pharmacist pair is always in sync.
  */
 @RestController
 public class ApiChatController {
@@ -52,12 +53,9 @@ public class ApiChatController {
         if (me == null) {
             return Map.of("messages", List.of());
         }
-        User partner = counterpart(me);
-        if (partner == null) {
-            return Map.of("messages", List.of());
-        }
-        List<ChatMessage> history = chatService.history(me.getId(), partner.getId());
-        return Map.of("messages", history.stream().map(this::dto).collect(Collectors.toList()));
+        // Shared room: everyone reads the same ordered thread.
+        List<ChatMessage> all = chatService.findAllOrdered();
+        return Map.of("messages", all.stream().map(this::dto).collect(Collectors.toList()));
     }
 
     public record SendRequest(String senderId, String senderName, String senderRole,

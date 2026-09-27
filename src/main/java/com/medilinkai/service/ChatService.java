@@ -23,4 +23,9 @@ public class ChatService {
     public List<ChatMessage> history(Long userA, Long userB) {
         return chatRepo.findConversation(userA, userB);
     }
+
+    /** The whole shared consultation room, oldest first. */
+    public List<ChatMessage> findAllOrdered() {
+        return chatRepo.findAllByOrderBySentAtAsc();
+    }
 }
